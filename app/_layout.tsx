@@ -6,10 +6,10 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import "react-native-reanimated";
+import { PaperProvider } from "react-native-paper";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 
@@ -33,29 +33,27 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      {/* <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack> */}
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <Drawer>
-          <Drawer.Screen
-            name="(tabs)" // This is the name of the page and must match the url from root
-            options={{
-              drawerLabel: "Home",
-              title: "Home",
-            }}
-          />
-          <Drawer.Screen
-            name="settings" // This is the name of the page and must match the url from root
-            options={{
-              drawerLabel: "Settings",
-              title: "Settings",
-            }}
-          />
-        </Drawer>
-      </GestureHandlerRootView>
-    </ThemeProvider>
+    <PaperProvider>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <Drawer>
+            <Drawer.Screen
+              name="(tabs)" // This is the name of the page and must match the url from root
+              options={{
+                drawerLabel: "Home",
+                title: "Home",
+              }}
+            />
+            <Drawer.Screen
+              name="settings" // This is the name of the page and must match the url from root
+              options={{
+                drawerLabel: "Settings",
+                title: "Settings",
+              }}
+            />
+          </Drawer>
+        </GestureHandlerRootView>
+      </ThemeProvider>
+    </PaperProvider>
   );
 }

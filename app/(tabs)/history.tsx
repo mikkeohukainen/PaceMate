@@ -1,11 +1,7 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { StyleSheet, Image, Platform } from "react-native";
-
-import { Collapsible } from "@/components/Collapsible";
-import { ExternalLink } from "@/components/ExternalLink";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
+import { StyleSheet } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { Calendar } from "react-native-calendars";
 
 export default function TabTwoScreen() {
   return (
@@ -13,27 +9,29 @@ export default function TabTwoScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="subtitle">Session history</ThemedText>
       </ThemedView>
-      
-      
-      </ThemedView>
+      <Calendar
+        style={{
+          borderWidth: 2,
+          borderColor: "gray",
+          height: 350,
+        }}
+        onDayPress={(day) => {
+          alert(day.dateString);
+        }}
+      />
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
-  },
-  titleContainer: {
-    flexDirection: "row",
-    gap: 8,
-  },
   content: {
     flex: 1,
     gap: 16,
     overflow: "hidden",
     padding: 32,
+  },
+  titleContainer: {
+    flexDirection: "row",
+    gap: 8,
   },
 });

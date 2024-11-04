@@ -5,9 +5,8 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "react-native-reanimated";
 import { PaperProvider } from "react-native-paper";
 
@@ -17,25 +16,23 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const [appIsReady, setAppIsReady] = useState(false);
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
-  });
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+    setAppIsReady(true);
+  }, []);
 
-  if (!loaded) {
-    return null;
-  }
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) {
+      await SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
 
   return (
     <PaperProvider>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
+        <GestureHandlerRootView onLayout={onLayoutRootView} style={{ flex: 1 }}>
           <Drawer>
             <Drawer.Screen
               name="(tabs)" // This is the name of the page and must match the url from root

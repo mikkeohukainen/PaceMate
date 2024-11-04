@@ -18,16 +18,14 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Start",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={"walk"} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <TabBarIcon name={"walk"} color={color} />,
         }}
       />
       <Tabs.Screen
         name="history"
         options={{
           title: "History",
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color }) => (
             <TabBarIcon name={"calendar-outline"} color={color} />
           ),
         }}

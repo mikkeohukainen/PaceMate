@@ -1,31 +1,36 @@
 import { StyleSheet } from "react-native";
-import { SegmentedButtons } from "react-native-paper";
 import { useState } from "react";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { SegmentedButtons, Switch } from "react-native-paper";
 
-export default function HomeScreen() {
-  const [activity, setActivity] = useState("");
+export default function SettingsScreen() {
+  const [value, setValue] = useState("");
+  const [isSwitchOn, setIsSwitchOn] = useState(false);
 
   return (
     <ThemedView style={styles.content}>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="subtitle">Select an activity</ThemedText>
+        <ThemedText type="subtitle">Settings</ThemedText>
       </ThemedView>
       <SegmentedButtons
-        value={activity}
-        onValueChange={setActivity}
+        value={value}
+        onValueChange={setValue}
         buttons={[
           {
             value: "walk",
             label: "Walking",
           },
           {
-            value: "run",
-            label: "Running",
+            value: "train",
+            label: "Transit",
           },
-          { value: "cycle", label: "Cycling" },
+          { value: "drive", label: "Driving" },
         ]}
+      />
+      <Switch
+        value={isSwitchOn}
+        onValueChange={() => setIsSwitchOn(!isSwitchOn)}
       />
     </ThemedView>
   );

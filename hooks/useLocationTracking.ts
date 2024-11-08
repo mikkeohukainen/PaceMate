@@ -1,23 +1,28 @@
 import * as Location from "expo-location";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 type LocationPoint = {
   latitude: number;
   longitude: number;
 };
 
-const useLocationTracking = (): LocationPoint[] => {
+const useLocationTracking = (
+  isTracking: boolean
+): [LocationPoint[], () => void] => {
   const [locationPoints, setLocationPoints] = useState<LocationPoint[]>([]);
+  const locationSubscription = useRef<Location.LocationSubscription | null>(
+    null
+  );
 
   useEffect(() => {
-    (async () => {
+    const startTracking = async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         console.error("Permission to access location was denied");
         return;
       }
 
-      const locationSubscription = await Location.watchPositionAsync(
+      locationSubscription.current = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.High,
           timeInterval: 1000,
@@ -34,14 +39,28 @@ const useLocationTracking = (): LocationPoint[] => {
           ]);
         }
       );
+    };
 
-      return () => {
-        locationSubscription.remove();
-      };
-    })();
-  }, []);
+    if (isTracking) {
+      startTracking();
+    } else if (locationSubscription.current) {
+      locationSubscription.current.remove();
+      locationSubscription.current = null;
+    }
 
-  return locationPoints;
+    return () => {
+      if (locationSubscription.current) {
+        locationSubscription.current.remove();
+        locationSubscription.current = null;
+      }
+    };
+  }, [isTracking]);
+
+  const resetLocationPoints = () => {
+    setLocationPoints([]);
+  };
+
+  return [locationPoints, resetLocationPoints];
 };
 
 export default useLocationTracking;

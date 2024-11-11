@@ -9,6 +9,7 @@ import { RootSiblingParent } from "react-native-root-siblings";
 import {
   adaptNavigationTheme,
   MD3DarkTheme,
+  MD3LightTheme,
   PaperProvider,
 } from "react-native-paper";
 import { Stack } from "expo-router";
@@ -24,12 +25,14 @@ export default function RootLayout() {
     reactNavigationLight: RNDefaultTheme,
     reactNavigationDark: RNDarkTheme,
     materialDark: MD3DarkTheme,
-    materialLight: MD3DarkTheme,
+    materialLight: MD3LightTheme,
   });
 
   return (
     <RootSiblingParent>
-      <PaperProvider>
+      <PaperProvider
+        theme={colorScheme === "dark" ? MD3DarkTheme : MD3LightTheme}
+      >
         <ThemeProvider value={colorScheme === "dark" ? DarkTheme : LightTheme}>
           <View
             style={{

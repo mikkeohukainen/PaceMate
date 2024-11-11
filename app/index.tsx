@@ -24,7 +24,11 @@ export default function HomeScreen() {
         <Appbar.Content
           title={
             <Text variant="headlineMedium">
-              <Text style={{ ...styles.appTitle, color: "white" }}>Pace</Text>
+              <Text
+                style={{ ...styles.appTitle, color: theme.colors.onSurface }}
+              >
+                Pace
+              </Text>
               <Text style={{ ...styles.appTitle, color: "orange" }}>Mate</Text>
             </Text>
           }

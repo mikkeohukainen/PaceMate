@@ -5,11 +5,18 @@ import { Appbar, FAB, useTheme, Text } from "react-native-paper";
 import Toast from "react-native-root-toast";
 import { initDB } from "@/database";
 
+// testi
+import usePedometer from "@/hooks/usePedometer";
+
 export default function HomeScreen() {
   const router = useRouter();
   const theme = useTheme();
   // FIXME: Move to Context
   const [isTracking, setIsTracking] = useState(false);
+
+  // testi
+  const { currentSteps, isPedometerAvailable, resetSteps, saveSteps } =
+    usePedometer();
 
   useEffect(() => {
     (async () => {
@@ -36,11 +43,18 @@ export default function HomeScreen() {
         <Appbar.Action icon="cog" onPress={() => router.push("/settings")} />
       </Appbar.Header>
       <View style={styles.content}>
+        {/* testi */}
+        {isPedometerAvailable && isTracking ? (
+          <Text>{currentSteps}</Text>
+        ) : (
+          <Text>???</Text>
+        )}
         <FAB
           icon={isTracking ? "stop" : "record"}
           label={isTracking ? "Stop" : "Start"}
           onPress={() => {
             if (isTracking) {
+              resetSteps(); // testi
               Toast.show("Long press to stop", {
                 duration: Toast.durations.SHORT,
               });
@@ -49,7 +63,10 @@ export default function HomeScreen() {
             }
           }}
           // Using long press prevents accidentally stopping the tracking
-          onLongPress={() => setIsTracking(false)}
+          onLongPress={() => {
+            setIsTracking(false);
+            saveSteps(currentSteps); // testi
+          }}
           color={isTracking ? theme.colors.onError : theme.colors.onPrimary}
           style={{
             ...styles.fab,

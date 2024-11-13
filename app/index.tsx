@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Appbar, FAB, useTheme, Text } from "react-native-paper";
 import Toast from "react-native-root-toast";
-import { initDB } from "@/database";
+import { initDB } from "@/database/database";
 
 export default function HomeScreen() {
   const router = useRouter();

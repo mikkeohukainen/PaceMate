@@ -2,10 +2,20 @@ import * as SQLite from "expo-sqlite";
 
 export interface Exercise {
   id: number;
-  type: string;
-  start_time: string;
+  type: string | null;
+  start_time: string | null;
   end_time: string | null;
   duration: number | null;
+  distance: number | null;
+  avg_speed: number | null;
+}
+
+export interface CompletedExercise {
+  id: number;
+  type: string;
+  start_time: string;
+  end_time: string;
+  duration: number;
   distance: number | null;
   avg_speed: number | null;
 }
@@ -20,22 +30,27 @@ export interface RoutePoint {
 let dbInstance: SQLite.SQLiteDatabase | null = null;
 
 export const getDatabase = async () => {
-  if (!dbInstance) {
-    dbInstance = await SQLite.openDatabaseAsync("app.db");
+  try {
+    if (!dbInstance) {
+      dbInstance = await SQLite.openDatabaseAsync("app.db");
+    }
+    return dbInstance;
+  } catch (error) {
+    console.error("Error getting database instance:", error);
+    throw error;
   }
-  return dbInstance;
 };
 
 const CREATE_EXERCISES_TABLE = `
- CREATE TABLE IF NOT EXISTS exercises (
-   id INTEGER PRIMARY KEY NOT NULL,
-   type TEXT NOT NULL,
-   start_time TEXT NOT NULL,
-   end_time TEXT,
-   duration INTEGER,
-   distance REAL,
-   avg_speed REAL
- )
+  CREATE TABLE IF NOT EXISTS exercises (
+    id INTEGER PRIMARY KEY NOT NULL,
+    type TEXT DEFAULT NULL,
+    start_time TEXT DEFAULT NULL,
+    end_time TEXT DEFAULT NULL,
+    duration INTEGER DEFAULT NULL,
+    distance REAL DEFAULT NULL,
+    avg_speed REAL DEFAULT NULL
+  )
 `;
 
 const CREATE_ROUTE_POINTS_TABLE = `

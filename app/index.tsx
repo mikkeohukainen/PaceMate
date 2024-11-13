@@ -4,6 +4,7 @@ import { StyleSheet, View } from "react-native";
 import { Appbar, FAB, useTheme, Text } from "react-native-paper";
 import Toast from "react-native-root-toast";
 import { initDB } from "@/database";
+import useSpeech from "@/hooks/useSpeech";
 
 // testi
 import usePedometer from "@/hooks/usePedometer";
@@ -15,6 +16,7 @@ export default function HomeScreen() {
   const [isTracking, setIsTracking] = useState(false);
 
   // testi
+  const { speakString } = useSpeech();
   const {
     currentSteps,
     isPedometerAvailable,
@@ -71,6 +73,7 @@ export default function HomeScreen() {
           onLongPress={() => {
             setIsTracking(false);
             saveSteps(currentSteps); // pedometri testausta
+            speakString(currentSteps); // TTS testi
             stopSubscription(); // pedometri testausta
           }}
           color={isTracking ? theme.colors.onError : theme.colors.onPrimary}

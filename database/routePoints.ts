@@ -1,55 +1,67 @@
 import { getDatabase, RoutePoint } from "./database";
 
-const getDb = async () => await getDatabase();
-
 export const routePointQueries = {
-  async insertRoutePoints(
-    exerciseId: number,
-    routePoints: RoutePoint[]
-  ): Promise<void> {
-    const db = await getDb();
-
+  // insert single route point into the database
+  create: async (point: RoutePoint): Promise<void> => {
+    const db = await getDatabase();
     const query = `
-     INSERT INTO route_points (
-       exercise_id,
-       timestamp,
-       latitude,
-       longitude
-     ) VALUES (?, ?, ?, ?)
-   `;
+      INSERT INTO route_points (
+        exercise_id,
+        timestamp, 
+        latitude,
+        longitude
+      ) VALUES (?, ?, ?, ?)
+    `;
 
-    try {
-      for (const routePoint of routePoints) {
-        const params: [number, string, number, number] = [
-          exerciseId,
-          routePoint.timestamp,
-          routePoint.latitude,
-          routePoint.longitude,
-        ];
+    const params = [
+      point.exercise_id,
+      point.timestamp,
+      point.latitude,
+      point.longitude,
+    ];
+    await db.runAsync(query, params);
+  },
+  // insert array of route points into the database
+  async bulkCreate(routePoints: RoutePoint[]): Promise<void> {
+    const db = await getDatabase();
+    const query = `
+      INSERT INTO route_points (
+        exercise_id,
+        timestamp, 
+        latitude,
+        longitude
+      ) VALUES (?, ?, ?, ?)
+    `;
 
-        await db.runAsync(query, params);
-      }
-    } catch (error) {
-      console.error("Error inserting route points:", error);
-      throw error;
+    for (const point of routePoints) {
+      const params: [number, string, number, number] = [
+        point.exercise_id,
+        point.timestamp,
+        point.latitude,
+        point.longitude,
+      ];
+
+      await db.runAsync(query, params);
     }
   },
-
-  async getRoutePointsByExerciseId(exerciseId: number): Promise<RoutePoint[]> {
-    const db = await getDb();
-
+  // get all route points by exercise id
+  async findByExerciseId(exerciseId: number): Promise<RoutePoint[]> {
+    const db = await getDatabase();
     const query = `
-     SELECT *
-     FROM route_points
-     WHERE exercise_id = ?
-     ORDER BY timestamp
-   `;
+      SELECT *
+      FROM route_points
+      WHERE exercise_id = ?
+      ORDER BY timestamp
+    `;
 
-    try {
-      return await db.getAllAsync<RoutePoint>(query, [exerciseId]);
-    } catch (error) {
-      console.error("Error getting route points:", error);
-      throw error;
-    }
+    return await db.getAllAsync<RoutePoint>(query, [exerciseId]);
+  },
+  deleteByExerciseId: async (exerciseId: number): Promise<void> => {
+    const db = await getDatabase();
+    const query = `
+      DELETE FROM route_points
+      WHERE exercise_id = ?
+    `;
+    await db.runAsync(query, [exerciseId]);
   },
 };

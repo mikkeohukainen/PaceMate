@@ -1,10 +1,6 @@
 import * as Location from "expo-location";
 import { useEffect, useState, useRef } from "react";
-
-type LocationPoint = {
-  latitude: number;
-  longitude: number;
-};
+import { LocationPoint } from "@/database/exerciseService";
 
 const useLocationTracking = (
   isTracking: boolean
@@ -33,6 +29,7 @@ const useLocationTracking = (
           setLocationPoints((currentPoints) => [
             ...currentPoints,
             {
+              timestamp: new Date(location.timestamp).toISOString(),
               latitude: location.coords.latitude,
               longitude: location.coords.longitude,
             },

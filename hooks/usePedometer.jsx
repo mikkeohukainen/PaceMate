@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Pedometer } from "expo-sensors";
 
 const usePedometer = () => {
   const [isPedometerAvailable, setIsPedometerAvailable] = useState(false);
   const [currentSteps, setCurrentSteps] = useState(0);
+  const subscription = useRef(null);
 
   const subscribe = async () => {
     const isAvailable = await Pedometer.isAvailableAsync();
@@ -14,10 +15,7 @@ const usePedometer = () => {
         setCurrentSteps(result.steps);
       });
     }
-  };
-
-  const resetSteps = () => {
-    setCurrentSteps(0);
+    return null;
   };
 
   const saveSteps = async (steps) => {
@@ -25,23 +23,27 @@ const usePedometer = () => {
     // TODO: Save steps to device
   };
 
-  useEffect(() => {
-    let subscription;
+  const startSubscription = async () => {
+    if (!subscription.current) {
+      subscription.current = await subscribe();
+    }
+  };
 
-    const initializeSubscription = async () => {
-      subscription = await subscribe();
-    };
+  const stopSubscription = async () => {
+    if (subscription.current) {
+      subscription.current.remove();
+      subscription.current = null;
+      setCurrentSteps(0);
+    }
+  };
 
-    initializeSubscription();
-
-    return () => {
-      if (subscription) {
-        subscription.remove();
-      }
-    };
-  }, []);
-
-  return { currentSteps, isPedometerAvailable, resetSteps, saveSteps };
+  return {
+    currentSteps,
+    isPedometerAvailable,
+    saveSteps,
+    startSubscription,
+    stopSubscription,
+  };
 };
 
 export default usePedometer;

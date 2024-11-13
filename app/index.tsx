@@ -15,8 +15,13 @@ export default function HomeScreen() {
   const [isTracking, setIsTracking] = useState(false);
 
   // testi
-  const { currentSteps, isPedometerAvailable, resetSteps, saveSteps } =
-    usePedometer();
+  const {
+    currentSteps,
+    isPedometerAvailable,
+    saveSteps,
+    startSubscription,
+    stopSubscription,
+  } = usePedometer();
 
   useEffect(() => {
     (async () => {
@@ -43,7 +48,7 @@ export default function HomeScreen() {
         <Appbar.Action icon="cog" onPress={() => router.push("/settings")} />
       </Appbar.Header>
       <View style={styles.content}>
-        {/* testi */}
+        {/* pedometri testausta */}
         {isPedometerAvailable && isTracking ? (
           <Text>{currentSteps}</Text>
         ) : (
@@ -53,8 +58,8 @@ export default function HomeScreen() {
           icon={isTracking ? "stop" : "record"}
           label={isTracking ? "Stop" : "Start"}
           onPress={() => {
+            if (!isTracking) startSubscription(); // pedometri testausta
             if (isTracking) {
-              resetSteps(); // testi
               Toast.show("Long press to stop", {
                 duration: Toast.durations.SHORT,
               });
@@ -65,7 +70,8 @@ export default function HomeScreen() {
           // Using long press prevents accidentally stopping the tracking
           onLongPress={() => {
             setIsTracking(false);
-            saveSteps(currentSteps); // testi
+            saveSteps(currentSteps); // pedometri testausta
+            stopSubscription(); // pedometri testausta
           }}
           color={isTracking ? theme.colors.onError : theme.colors.onPrimary}
           style={{

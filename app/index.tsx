@@ -7,12 +7,16 @@ import { initDB } from "@/database/database";
 import { ExerciseContext } from "@/context/ExerciseContext";
 import useLocationTracking from "@/hooks/useLocationTracking";
 import MapRoute from "@/components/gps/MapRoute";
+import {
+  saveExerciseWithRoute,
+  getAllExercises,
+} from "@/database/exerciseService";
 
 export default function HomeScreen() {
   const router = useRouter();
   const theme = useTheme();
 
-  const { isTracking, setIsTracking, locationPoints } =
+  const { isTracking, setIsTracking, locationPoints, resetLocationPoints } =
     useContext(ExerciseContext);
 
   useEffect(() => {
@@ -24,9 +28,31 @@ export default function HomeScreen() {
 
   useLocationTracking();
 
-  const handleStopTracking = () => {
+  const handleStopTracking = async () => {
     setIsTracking(false);
     // Save the data to SQLite
+    if (locationPoints.length > 0) {
+      try {
+        const exerciseId = await saveExerciseWithRoute(
+          "Running",
+          locationPoints
+        );
+        console.log("Exercise saved with ID:", exerciseId);
+        resetLocationPoints();
+      } catch (error) {
+        console.error("Error saving exercise:", error);
+      }
+    }
+    try {
+      const exercises = await getAllExercises();
+      console.log("All exercises:", exercises);
+    } catch (error) {
+      console.error("Error getting all exercises:", error);
+    }
+  };
+
+  const handleStartTracking = () => {
+    setIsTracking(true);
   };
 
   return (
@@ -71,7 +97,7 @@ export default function HomeScreen() {
                 duration: Toast.durations.SHORT,
               });
             } else {
-              setIsTracking(true);
+              handleStartTracking();
             }
           }}
           onLongPress={() => {

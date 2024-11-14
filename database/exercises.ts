@@ -1,11 +1,51 @@
-import { getDatabase, Exercise } from "./database";
-
-const getDb = async () => await getDatabase();
+import { getDatabase, Exercise, CompletedExercise } from "./database";
 
 export const exerciseQueries = {
-  async addExercise(exercise: Omit<Exercise, "id">): Promise<number> {
-    const db = await getDb();
+  // create an empty exercise and return the id
+  async createEmpty(): Promise<number> {
+    const db = await getDatabase();
+    const query = "INSERT INTO exercises DEFAULT VALUES";
+    const { lastInsertRowId } = await db.runAsync(query);
+    return lastInsertRowId;
+  },
 
+  // update an exercise
+  async update(exercise: CompletedExercise): Promise<void> {
+    const db = await getDatabase();
+    const query = `
+      UPDATE exercises
+      SET
+        type = ?,
+        start_time = ?,
+        end_time = ?,
+        duration = ?,
+        distance = ?,
+        avg_speed = ?
+      WHERE id = ?
+    `;
+    const params: [
+      string,
+      string,
+      string,
+      number | null,
+      number | null,
+      number | null,
+      number,
+    ] = [
+      exercise.type,
+      exercise.start_time,
+      exercise.end_time,
+      exercise.duration,
+      exercise.distance,
+      exercise.avg_speed,
+      exercise.id,
+    ];
+    await db.runAsync(query, params);
+  },
+
+  // create an exercise
+  async create(exercise: Omit<Exercise, "id">): Promise<number> {
+    const db = await getDatabase();
     const query = `
       INSERT INTO exercises (
         type,
@@ -17,10 +57,9 @@ export const exerciseQueries = {
       )
       VALUES (?, ?, ?, ?, ?, ?)
     `;
-
     const params: [
-      string,
-      string,
+      string | null,
+      string | null,
       string | null,
       number | null,
       number | null,
@@ -33,33 +72,27 @@ export const exerciseQueries = {
       exercise.distance,
       exercise.avg_speed,
     ];
-
     const { lastInsertRowId } = await db.runAsync(query, params);
     return lastInsertRowId;
   },
 
-  async getExerciseById(id: number): Promise<Exercise | null> {
-    const db = await getDb();
-
+  // find all exercises
+  async findAll(): Promise<Exercise[]> {
+    const db = await getDatabase();
     const query = `
-     SELECT *
-     FROM exercises
-     WHERE id = ?
-   `;
-
-    const results = await db.getAllAsync<Exercise>(query, [id]);
-    return results[0] || null;
+      SELECT *
+      FROM exercises
+      ORDER BY start_time DESC
+    `;
+    return await db.getAllAsync<Exercise>(query);
   },
 
-  async getAllExercises(): Promise<Exercise[]> {
-    const db = await getDb();
-
+  async delete(id: number): Promise<void> {
+    const db = await getDatabase();
     const query = `
-     SELECT *
-     FROM exercises
-     ORDER BY start_time DESC
-   `;
-
-    return db.getAllAsync<Exercise>(query);
+      DELETE FROM exercises
+      WHERE id = ?
+    `;
+    await db.runAsync(query, [id]);
   },
 };

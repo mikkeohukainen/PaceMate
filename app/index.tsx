@@ -1,15 +1,19 @@
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useContext } from "react";
 import { StyleSheet, View } from "react-native";
 import { Appbar, FAB, useTheme, Text } from "react-native-paper";
 import Toast from "react-native-root-toast";
 import { initDB } from "@/database/database";
+import { ExerciseContext } from "@/context/ExerciseContext";
+import useLocationTracking from "@/hooks/useLocationTracking";
+import MapRoute from "@/components/gps/MapRoute";
 
 export default function HomeScreen() {
   const router = useRouter();
   const theme = useTheme();
-  // FIXME: Move to Context
-  const [isTracking, setIsTracking] = useState(false);
+
+  const { isTracking, setIsTracking, locationPoints } =
+    useContext(ExerciseContext);
 
   useEffect(() => {
     (async () => {
@@ -17,6 +21,13 @@ export default function HomeScreen() {
       console.log("Database initialized");
     })();
   }, []);
+
+  useLocationTracking();
+
+  const handleStopTracking = () => {
+    setIsTracking(false);
+    // Save the data to SQLite
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -36,6 +47,21 @@ export default function HomeScreen() {
         <Appbar.Action icon="cog" onPress={() => router.push("/settings")} />
       </Appbar.Header>
       <View style={styles.content}>
+        {locationPoints.length === 0 && isTracking && (
+          <Text>Connecting...</Text>
+        )}
+        <Text>
+          Last location:{" "}
+          {locationPoints.length > 0
+            ? `${locationPoints[locationPoints.length - 1].latitude}, ${locationPoints[locationPoints.length - 1].longitude}`
+            : "No location yet"}
+        </Text>
+        <View style={styles.mapContainer}>
+          {locationPoints.length > 0 && (
+            <MapRoute locationPoints={locationPoints} />
+          )}
+        </View>
+
         <FAB
           icon={isTracking ? "stop" : "record"}
           label={isTracking ? "Stop" : "Start"}
@@ -48,8 +74,11 @@ export default function HomeScreen() {
               setIsTracking(true);
             }
           }}
-          // Using long press prevents accidentally stopping the tracking
-          onLongPress={() => setIsTracking(false)}
+          onLongPress={() => {
+            if (isTracking) {
+              handleStopTracking();
+            }
+          }}
           color={isTracking ? theme.colors.onError : theme.colors.onPrimary}
           style={{
             ...styles.fab,
@@ -79,5 +108,9 @@ const styles = StyleSheet.create({
     margin: 16,
     position: "absolute",
     right: 0,
+  },
+  mapContainer: {
+    flex: 1,
+    marginTop: 16,
   },
 });

@@ -38,9 +38,15 @@ export default function HomeScreen() {
           locationPoints
         );
         console.log("Exercise saved with ID:", exerciseId);
+        Toast.show("Exercise saved", {
+          duration: Toast.durations.SHORT,
+        });
         resetLocationPoints();
       } catch (error) {
         console.error("Error saving exercise:", error);
+        Toast.show("Error saving exercise", {
+          duration: Toast.durations.SHORT,
+        });
       }
     }
     try {

@@ -31,7 +31,7 @@ const usePedometer = () => {
         pedometerSubscription.current.remove();
         pedometerSubscription.current = null;
         console.log("tracking stopped, steps: ", currentSteps);
-        setCurrentSteps(0);
+        // setCurrentSteps(0);
       }
     };
 

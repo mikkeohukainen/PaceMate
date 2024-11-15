@@ -4,8 +4,6 @@ import { Subscription } from "expo-modules-core";
 import { ExerciseContext } from "@/context/ExerciseContext";
 
 const usePedometer = () => {
-  // const [isPedometerAvailable, setIsPedometerAvailable] = useState(false);
-  // const subscription = useRef(null);
   const pedometerSubscription = useRef<Subscription | null>(null);
 
   const { isTracking, setCurrentSteps, currentSteps } =
@@ -47,45 +45,7 @@ const usePedometer = () => {
       stopPedometer();
     };
   }, [isTracking]);
-
-  //   const subscribe = async () => {
-  //     const isAvailable = await Pedometer.isAvailableAsync();
-  //     setIsPedometerAvailable(isAvailable);
-
-  //     if (isAvailable) {
-  //       return Pedometer.watchStepCount((result) => {
-  //         setCurrentSteps(result.steps);
-  //       });
-  //     }
-  //     return null;
-  //   };
-
-  //   const saveSteps = async () => {
-  //     console.log("tracking stopped, steps: ", currentSteps);
-  //     // TODO: Save steps to device
-  //   };
-
-  //   const startPedometer = async () => {
-  //     if (!subscription.current) {
-  //       subscription.current = await subscribe();
-  //     }
-  //   };
-
-  //   const stopPedometer = async () => {
-  //     if (subscription.current) {
-  //       subscription.current.remove();
-  //       subscription.current = null;
-  //       setCurrentSteps(0);
-  //     }
-  //   };
-
-  //   return {
-  //     currentSteps,
-  //     isPedometerAvailable,
-  //     saveSteps,
-  //     startPedometer,
-  //     stopPedometer,
-  //   };
+  // 'currentSteps' and 'setCurrentSteps' should be memoized before adding them to the dependency array.
 };
 
 export default usePedometer;

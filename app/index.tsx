@@ -39,38 +39,6 @@ export default function HomeScreen() {
   useLocationTracking();
   usePedometer();
 
-  // const handleStopTracking = async () => {
-  //   setIsTracking(false);
-
-  //   // Save the data to SQLite
-  //   if (locationPoints.length > 0) {
-  //     try {
-  //       const exerciseId = await saveExerciseWithRoute(
-  //         "Running",
-  //         locationPoints,
-  //         currentSteps
-  //       );
-  //       console.log("Exercise saved with ID:", exerciseId);
-  //       Toast.show("Exercise saved", {
-  //         duration: Toast.durations.SHORT,
-  //       });
-  //       resetLocationPoints();
-  //       setCurrentSteps(0);
-  //     } catch (error) {
-  //       console.error("Error saving exercise:", error);
-  //       Toast.show("Error saving exercise", {
-  //         duration: Toast.durations.SHORT,
-  //       });
-  //     }
-  //   }
-  //   try {
-  //     const exercises = await getAllExercises();
-  //     console.log("All exercises:", exercises);
-  //   } catch (error) {
-  //     console.error("Error getting all exercises:", error);
-  //   }
-  // };
-
   const handleStopTracking = () => {
     setIsTracking(false);
     setModalVisible(true);
@@ -140,6 +108,10 @@ export default function HomeScreen() {
               <Text style={{ ...styles.appTitle, color: "orange" }}>Mate</Text>
             </Text>
           }
+        />
+        <Appbar.Action
+          icon="history"
+          onPress={() => router.push("/exercises")}
         />
         <Appbar.Action icon="cog" onPress={() => router.push("/settings")} />
       </Appbar.Header>

@@ -6,6 +6,7 @@ import Toast from "react-native-root-toast";
 import { initDB } from "@/database/database";
 import { ExerciseContext } from "@/context/ExerciseContext";
 import useLocationTracking from "@/hooks/useLocationTracking";
+import usePedometer from "@/hooks/usePedometer";
 import MapRoute from "@/components/gps/MapRoute";
 import {
   saveExerciseWithRoute,
@@ -16,8 +17,13 @@ export default function HomeScreen() {
   const router = useRouter();
   const theme = useTheme();
 
-  const { isTracking, setIsTracking, locationPoints, resetLocationPoints } =
-    useContext(ExerciseContext);
+  const {
+    isTracking,
+    setIsTracking,
+    locationPoints,
+    resetLocationPoints,
+    currentSteps,
+  } = useContext(ExerciseContext);
 
   useEffect(() => {
     (async () => {
@@ -27,9 +33,11 @@ export default function HomeScreen() {
   }, []);
 
   useLocationTracking();
+  usePedometer();
 
   const handleStopTracking = async () => {
     setIsTracking(false);
+
     // Save the data to SQLite
     if (locationPoints.length > 0) {
       try {
@@ -79,6 +87,12 @@ export default function HomeScreen() {
         <Appbar.Action icon="cog" onPress={() => router.push("/settings")} />
       </Appbar.Header>
       <View style={styles.content}>
+        {/* Pedometer test */}
+        {currentSteps > 0 && isTracking ? (
+          <Text>{currentSteps}</Text>
+        ) : (
+          <Text>Pedometer not in use</Text>
+        )}
         {locationPoints.length === 0 && isTracking && (
           <Text>Connecting...</Text>
         )}

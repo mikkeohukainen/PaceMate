@@ -8,6 +8,8 @@ interface ExerciseProviderProps {
 interface ExerciseContextType {
   locationPoints: LocationPoint[];
   isTracking: boolean;
+  currentSteps: number;
+  setCurrentSteps: (steps: number) => void;
   setIsTracking: (isTracking: boolean) => void;
   addLocationPoint: (point: LocationPoint) => void;
   resetLocationPoints: () => void;
@@ -16,6 +18,8 @@ interface ExerciseContextType {
 export const ExerciseContext = createContext<ExerciseContextType>({
   locationPoints: [],
   isTracking: false,
+  currentSteps: 0,
+  setCurrentSteps: () => {},
   setIsTracking: () => {},
   addLocationPoint: () => {},
   resetLocationPoints: () => {},
@@ -26,6 +30,7 @@ export const ExerciseProvider: React.FC<ExerciseProviderProps> = ({
 }) => {
   const [locationPoints, setLocationPoints] = useState<LocationPoint[]>([]);
   const [isTracking, setIsTracking] = useState(false);
+  const [currentSteps, setCurrentSteps] = useState(0);
 
   const addLocationPoint = (point: LocationPoint) => {
     setLocationPoints((prevPoints) => [...prevPoints, point]);
@@ -40,6 +45,8 @@ export const ExerciseProvider: React.FC<ExerciseProviderProps> = ({
       value={{
         locationPoints,
         isTracking,
+        currentSteps,
+        setCurrentSteps,
         setIsTracking,
         addLocationPoint,
         resetLocationPoints,

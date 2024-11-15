@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Appbar, FAB, useTheme, Text } from "react-native-paper";
 import Toast from "react-native-root-toast";
@@ -12,10 +12,13 @@ import {
   saveExerciseWithRoute,
   getAllExercises,
 } from "@/database/exerciseService";
+import SaveExerciseModal from "@/components/SaveExerciseModal";
 
 export default function HomeScreen() {
   const router = useRouter();
   const theme = useTheme();
+
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const {
     isTracking,
@@ -36,14 +39,51 @@ export default function HomeScreen() {
   useLocationTracking();
   usePedometer();
 
-  const handleStopTracking = async () => {
+  // const handleStopTracking = async () => {
+  //   setIsTracking(false);
+
+  //   // Save the data to SQLite
+  //   if (locationPoints.length > 0) {
+  //     try {
+  //       const exerciseId = await saveExerciseWithRoute(
+  //         "Running",
+  //         locationPoints,
+  //         currentSteps
+  //       );
+  //       console.log("Exercise saved with ID:", exerciseId);
+  //       Toast.show("Exercise saved", {
+  //         duration: Toast.durations.SHORT,
+  //       });
+  //       resetLocationPoints();
+  //       setCurrentSteps(0);
+  //     } catch (error) {
+  //       console.error("Error saving exercise:", error);
+  //       Toast.show("Error saving exercise", {
+  //         duration: Toast.durations.SHORT,
+  //       });
+  //     }
+  //   }
+  //   try {
+  //     const exercises = await getAllExercises();
+  //     console.log("All exercises:", exercises);
+  //   } catch (error) {
+  //     console.error("Error getting all exercises:", error);
+  //   }
+  // };
+
+  const handleStopTracking = () => {
     setIsTracking(false);
+    setModalVisible(true);
+  };
+
+  const handleSaveExercise = async (exerciseType: string) => {
+    setModalVisible(false);
 
     // Save the data to SQLite
     if (locationPoints.length > 0) {
       try {
         const exerciseId = await saveExerciseWithRoute(
-          "Running",
+          exerciseType,
           locationPoints,
           currentSteps
         );
@@ -59,6 +99,11 @@ export default function HomeScreen() {
           duration: Toast.durations.SHORT,
         });
       }
+    } else {
+      console.warn("No location points to save");
+      Toast.show("No data to save", {
+        duration: Toast.durations.SHORT,
+      });
     }
     try {
       const exercises = await getAllExercises();
@@ -70,6 +115,15 @@ export default function HomeScreen() {
 
   const handleStartTracking = () => {
     setIsTracking(true);
+  };
+
+  const handleCancelSave = () => {
+    setModalVisible(false);
+    resetLocationPoints();
+    setCurrentSteps(0);
+    Toast.show("Exercise discarded", {
+      duration: Toast.durations.SHORT,
+    });
   };
 
   return (
@@ -135,6 +189,11 @@ export default function HomeScreen() {
               ? theme.colors.error
               : theme.colors.primary,
           }}
+        />
+        <SaveExerciseModal
+          visible={modalVisible}
+          onDismiss={handleCancelSave}
+          onSave={handleSaveExercise}
         />
       </View>
     </View>

@@ -20,13 +20,15 @@ export const exerciseQueries = {
         end_time = ?,
         duration = ?,
         distance = ?,
-        avg_speed = ?
+        avg_speed = ?,
+        steps = ?
       WHERE id = ?
     `;
     const params: [
       string,
       string,
       string,
+      number | null,
       number | null,
       number | null,
       number | null,
@@ -38,6 +40,7 @@ export const exerciseQueries = {
       exercise.duration,
       exercise.distance,
       exercise.avg_speed,
+      exercise.steps,
       exercise.id,
     ];
     await db.runAsync(query, params);
@@ -53,14 +56,16 @@ export const exerciseQueries = {
         end_time,
         duration,
         distance,
-        avg_speed
+        avg_speed,
+        steps
       )
-      VALUES (?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
     const params: [
       string | null,
       string | null,
       string | null,
+      number | null,
       number | null,
       number | null,
       number | null,
@@ -71,6 +76,7 @@ export const exerciseQueries = {
       exercise.duration,
       exercise.distance,
       exercise.avg_speed,
+      exercise.steps,
     ];
     const { lastInsertRowId } = await db.runAsync(query, params);
     return lastInsertRowId;

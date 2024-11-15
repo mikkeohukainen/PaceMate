@@ -8,6 +8,7 @@ export interface Exercise {
   duration: number | null;
   distance: number | null;
   avg_speed: number | null;
+  steps: number | null;
 }
 
 export interface CompletedExercise {
@@ -18,6 +19,7 @@ export interface CompletedExercise {
   duration: number;
   distance: number | null;
   avg_speed: number | null;
+  steps: number | null;
 }
 
 export interface RoutePoint {
@@ -49,7 +51,8 @@ const CREATE_EXERCISES_TABLE = `
     end_time TEXT DEFAULT NULL,
     duration INTEGER DEFAULT NULL,
     distance REAL DEFAULT NULL,
-    avg_speed REAL DEFAULT NULL
+    avg_speed REAL DEFAULT NULL,
+    steps INTEGER DEFAULT NULL
   )
 `;
 

@@ -23,6 +23,7 @@ export default function HomeScreen() {
     locationPoints,
     resetLocationPoints,
     currentSteps,
+    setCurrentSteps,
   } = useContext(ExerciseContext);
 
   useEffect(() => {
@@ -43,13 +44,15 @@ export default function HomeScreen() {
       try {
         const exerciseId = await saveExerciseWithRoute(
           "Running",
-          locationPoints
+          locationPoints,
+          currentSteps
         );
         console.log("Exercise saved with ID:", exerciseId);
         Toast.show("Exercise saved", {
           duration: Toast.durations.SHORT,
         });
         resetLocationPoints();
+        setCurrentSteps(0);
       } catch (error) {
         console.error("Error saving exercise:", error);
         Toast.show("Error saving exercise", {

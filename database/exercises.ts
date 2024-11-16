@@ -101,4 +101,19 @@ export const exerciseQueries = {
     `;
     await db.runAsync(query, [id]);
   },
+
+  async findById(id: number): Promise<Exercise | null> {
+    const db = await getDatabase();
+    const query = `
+      SELECT *
+      FROM exercises
+      WHERE id = ?
+    `;
+    const results = await db.getAllAsync<Exercise>(query, [id]);
+    if (results.length > 0) {
+      return results[0];
+    } else {
+      return null;
+    }
+  },
 };

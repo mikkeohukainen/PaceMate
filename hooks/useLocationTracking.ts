@@ -1,11 +1,10 @@
 import * as Location from "expo-location";
-import { useEffect, useState, useRef } from "react";
-import { LocationPoint } from "@/database/exerciseService";
+import { useEffect, useRef, useContext } from "react";
+import { ExerciseContext } from "@/context/ExerciseContext";
 
-const useLocationTracking = (
-  isTracking: boolean
-): [LocationPoint[], () => void] => {
-  const [locationPoints, setLocationPoints] = useState<LocationPoint[]>([]);
+const useLocationTracking = () => {
+  const { addLocationPoint, isTracking, resetLocationPoints } =
+    useContext(ExerciseContext);
   const locationSubscription = useRef<Location.LocationSubscription | null>(
     null
   );
@@ -18,6 +17,8 @@ const useLocationTracking = (
         return;
       }
 
+      resetLocationPoints();
+
       locationSubscription.current = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.High,
@@ -26,14 +27,11 @@ const useLocationTracking = (
         },
         (location: Location.LocationObject) => {
           console.log("New location: ", location);
-          setLocationPoints((currentPoints) => [
-            ...currentPoints,
-            {
-              timestamp: new Date(location.timestamp).toISOString(),
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-            },
-          ]);
+          addLocationPoint({
+            timestamp: new Date(location.timestamp).toISOString(),
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          });
         }
       );
     };
@@ -52,12 +50,9 @@ const useLocationTracking = (
       }
     };
   }, [isTracking]);
-
-  const resetLocationPoints = () => {
-    setLocationPoints([]);
-  };
-
-  return [locationPoints, resetLocationPoints];
+  /*WARNING
+  App crashes if 'addLocationPoint' and 'resetLocationPoints' are added to the dependency array.
+  */
 };
 
 export default useLocationTracking;

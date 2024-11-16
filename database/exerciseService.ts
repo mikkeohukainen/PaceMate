@@ -19,7 +19,8 @@ export const finishExercise = (exerciseData: CompletedExercise) =>
 // use this to generate exercise data after completion using locationPoints
 export const generateExerciseData = async (
   exerciseID: number,
-  type: string
+  type: string,
+  steps: number
 ): Promise<CompletedExercise> => {
   const locationPoints = await routePointQueries.findByExerciseId(exerciseID);
 
@@ -43,6 +44,7 @@ export const generateExerciseData = async (
     duration: durationInSeconds,
     distance: totalDistanceKm || null,
     avg_speed: averageSpeedKmh || null,
+    steps: steps,
   };
 };
 
@@ -50,7 +52,8 @@ export const generateExerciseData = async (
 // keep this here as backup
 export const saveExerciseWithRoute = async (
   type: string,
-  locationPoints: LocationPoint[]
+  locationPoints: LocationPoint[],
+  steps: number
 ): Promise<number> => {
   if (!locationPoints.length) {
     throw new Error("No location points to save");
@@ -71,6 +74,7 @@ export const saveExerciseWithRoute = async (
     duration: durationInSeconds,
     distance: totalDistanceKm,
     avg_speed: averageSpeedKmh,
+    steps,
   };
 
   const exerciseId = await exerciseQueries.create(newExercise);

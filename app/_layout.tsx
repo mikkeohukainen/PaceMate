@@ -14,6 +14,7 @@ import {
 } from "react-native-paper";
 import { Stack } from "expo-router";
 import { useColorScheme, View } from "react-native";
+import { ExerciseProvider } from "@/context/ExerciseContext";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -34,23 +35,25 @@ export default function RootLayout() {
         theme={colorScheme === "dark" ? MD3DarkTheme : MD3LightTheme}
       >
         <ThemeProvider value={colorScheme === "dark" ? DarkTheme : LightTheme}>
-          <View
-            style={{
-              flex: 1,
-              backgroundColor:
-                colorScheme === "dark"
-                  ? DarkTheme.colors.background
-                  : LightTheme.colors.background,
-            }}
-          >
-            <Stack>
-              <Stack.Screen name="index" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="settings"
-                options={{ headerTitle: "Settings" }}
-              />
-            </Stack>
-          </View>
+          <ExerciseProvider>
+            <View
+              style={{
+                flex: 1,
+                backgroundColor:
+                  colorScheme === "dark"
+                    ? DarkTheme.colors.background
+                    : LightTheme.colors.background,
+              }}
+            >
+              <Stack>
+                <Stack.Screen name="index" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="settings"
+                  options={{ headerTitle: "Settings" }}
+                />
+              </Stack>
+            </View>
+          </ExerciseProvider>
         </ThemeProvider>
       </PaperProvider>
     </RootSiblingParent>

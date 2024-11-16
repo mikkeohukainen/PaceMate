@@ -159,3 +159,15 @@ export const deleteExercise = async (exerciseId: number): Promise<void> => {
 export const getAllExercises = async (): Promise<Exercise[]> => {
   return await exerciseQueries.findAll();
 };
+
+export const getExerciseById = async (
+  exerciseId: number
+): Promise<Exercise | null> => {
+  return await exerciseQueries.findById(exerciseId);
+};
+
+export const getRoutePointsByExerciseId = async (
+  exerciseId: number
+): Promise<RoutePoint[]> => {
+  return await routePointQueries.findByExerciseId(exerciseId);
+};

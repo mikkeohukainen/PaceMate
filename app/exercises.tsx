@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
 import { List, Text, Card } from "react-native-paper";
-// import { useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { getAllExercises } from "@/database/exerciseService";
 import { Exercise } from "@/database/database";
 // import { format } from "date-fns";
 
 /*
 TODO: 
-    Implement exercise-details screen and add navigation to it
     Format date?
     Format card content?
  */
 
 const ExercisesScreen: React.FC = () => {
-  // const router = useRouter();
+  const router = useRouter();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -43,7 +42,10 @@ const ExercisesScreen: React.FC = () => {
       <Card
         style={styles.card}
         onPress={() => {
-          /* Handle press */
+          router.push({
+            pathname: "/exerciseDetails/[id]",
+            params: { id: item.id.toString() },
+          });
         }}
       >
         <Card.Title

@@ -41,6 +41,7 @@ module.exports = {
     "react-native/no-raw-text": "off",
     "react-native/no-color-literals": "off",
     "react-native/no-inline-styles": "off",
+    "react-native/split-platform-components": "off",
     "react/prop-types": "off",
   },
   settings: {

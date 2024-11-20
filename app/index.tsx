@@ -1,8 +1,7 @@
 import { useRouter } from "expo-router";
 import { useEffect, useContext, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, ToastAndroid, View } from "react-native";
 import { Appbar, FAB, useTheme, Text } from "react-native-paper";
-import Toast from "react-native-root-toast";
 import { initDB } from "@/database/database";
 import { ExerciseContext } from "@/context/ExerciseContext";
 import useLocationTracking from "@/hooks/useLocationTracking";
@@ -56,22 +55,16 @@ export default function HomeScreen() {
           currentSteps
         );
         console.log("Exercise saved with ID:", exerciseId);
-        Toast.show("Exercise saved", {
-          duration: Toast.durations.SHORT,
-        });
+        ToastAndroid.show("Exercise saved", ToastAndroid.SHORT);
         resetLocationPoints();
         setCurrentSteps(0);
       } catch (error) {
         console.error("Error saving exercise:", error);
-        Toast.show("Error saving exercise", {
-          duration: Toast.durations.SHORT,
-        });
+        ToastAndroid.show("Error saving exercise", ToastAndroid.SHORT);
       }
     } else {
       console.warn("No location points to save");
-      Toast.show("No data to save", {
-        duration: Toast.durations.SHORT,
-      });
+      ToastAndroid.show("No data to save", ToastAndroid.SHORT);
     }
     try {
       const exercises = await getAllExercises();
@@ -89,9 +82,7 @@ export default function HomeScreen() {
     setModalVisible(false);
     resetLocationPoints();
     setCurrentSteps(0);
-    Toast.show("Exercise discarded", {
-      duration: Toast.durations.SHORT,
-    });
+    ToastAndroid.show("Exercise discarded", ToastAndroid.SHORT);
   };
 
   return (
@@ -142,9 +133,7 @@ export default function HomeScreen() {
           label={isTracking ? "Stop" : "Start"}
           onPress={() => {
             if (isTracking) {
-              Toast.show("Long press to stop", {
-                duration: Toast.durations.SHORT,
-              });
+              ToastAndroid.show("Long press to stop", ToastAndroid.SHORT);
             } else {
               handleStartTracking();
             }

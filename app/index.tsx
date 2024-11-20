@@ -13,6 +13,10 @@ import {
   getAllExercises,
 } from "@/database/exerciseService";
 import SaveExerciseModal from "@/components/SaveExerciseModal";
+import {
+  checkIfUserProfileInitialized,
+  deleteUserProfile,
+} from "@/hooks/useUserProfile";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -33,6 +37,8 @@ export default function HomeScreen() {
     (async () => {
       await initDB();
       console.log("Database initialized");
+      // await deleteUserProfile(); // Delete user profile for testing
+      await checkIfUserProfileInitialized(); // Initialize profile if not already done
     })();
   }, []);
 

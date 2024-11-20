@@ -1,10 +1,10 @@
 import { useRef, useContext, useEffect } from "react";
 import { Pedometer } from "expo-sensors";
-import { Subscription } from "expo-modules-core";
+import { EventSubscription } from "expo-modules-core";
 import { ExerciseContext } from "@/context/ExerciseContext";
 
 const usePedometer = () => {
-  const pedometerSubscription = useRef<Subscription | null>(null);
+  const pedometerSubscription = useRef<EventSubscription | null>(null);
 
   const { isTracking, setCurrentSteps, currentSteps } =
     useContext(ExerciseContext);

@@ -8,8 +8,13 @@ import {
   TextInput,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { loadUserProfile, saveUserProfile } from "@/hooks/useUserProfile";
+import {
+  loadUserProfile,
+  saveUserProfile,
+  deleteUserProfile,
+} from "@/hooks/useUserProfile";
 import { UserProfileType } from "@/types/interfaceTypes";
+import { useRouter } from "expo-router";
 
 export default function UserProfile() {
   const [userProfile, setUserProfile] = useState<UserProfileType | null>(null);
@@ -18,6 +23,7 @@ export default function UserProfile() {
     null
   );
   const [inputValue, setInputValue] = useState<string>("");
+  const router = useRouter();
 
   // Get user profile data from device
   useEffect(() => {
@@ -54,6 +60,16 @@ export default function UserProfile() {
     setModalVisible(false);
   };
 
+  const handleResetData = async () => {
+    const resetProfile: UserProfileType = {
+      Age: 0,
+      Weight: 0,
+      Height: 0,
+    };
+    await saveUserProfile(resetProfile);
+    router.back();
+  };
+
   if (!userProfile) {
     return <Text>Loading...</Text>;
   }
@@ -61,34 +77,46 @@ export default function UserProfile() {
   return (
     <>
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => openModal("Age")}>
-          <Text style={styles.textContainer}>Age</Text>
-          {userProfile.Age === 0 ? (
-            <Text style={styles.textContainer}>not set</Text>
-          ) : (
-            <Text style={styles.textContainer}>{userProfile.Age}</Text>
-          )}
-        </TouchableOpacity>
-      </View>
-      <View style={styles.container}>
-        <TouchableOpacity onPress={() => openModal("Height")}>
-          <Text style={styles.textContainer}>Height</Text>
-          {userProfile.Height === 0 ? (
-            <Text style={styles.textContainer}>not set</Text>
-          ) : (
-            <Text style={styles.textContainer}>{userProfile.Height}</Text>
-          )}
-        </TouchableOpacity>
-      </View>
-      <View style={styles.container}>
-        <TouchableOpacity onPress={() => openModal("Weight")}>
-          <Text style={styles.textContainer}>Weight</Text>
-          {userProfile.Weight === 0 ? (
-            <Text style={styles.textContainer}>not set</Text>
-          ) : (
-            <Text style={styles.textContainer}>{userProfile.Weight}</Text>
-          )}
-        </TouchableOpacity>
+        <View style={styles.rowContainer}>
+          <TouchableOpacity
+            style={styles.textContainer}
+            onPress={() => openModal("Age")}
+          >
+            <Text style={styles.text}>Age</Text>
+            {userProfile.Age === 0 ? (
+              <Text style={styles.text}>not set</Text>
+            ) : (
+              <Text style={styles.text}>{userProfile.Age}</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+        <View style={styles.rowContainer}>
+          <TouchableOpacity
+            style={styles.textContainer}
+            onPress={() => openModal("Height")}
+          >
+            <Text style={styles.text}>Height</Text>
+            {userProfile.Height === 0 ? (
+              <Text style={styles.text}>not set</Text>
+            ) : (
+              <Text style={styles.text}>{userProfile.Height}</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+        <View style={styles.rowContainer}>
+          <TouchableOpacity
+            style={styles.textContainer}
+            onPress={() => openModal("Weight")}
+          >
+            <Text style={styles.text}>Weight</Text>
+            {userProfile.Weight === 0 ? (
+              <Text style={styles.text}>not set</Text>
+            ) : (
+              <Text style={styles.text}>{userProfile.Weight}</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+        <Button title="reset all" onPress={() => handleResetData()} />
       </View>
 
       <Modal
@@ -101,6 +129,7 @@ export default function UserProfile() {
           <View style={styles.modalContent}>
             <TextInput
               style={styles.input}
+              placeholder=""
               value={inputValue}
               onChangeText={setInputValue}
               keyboardType="numeric"
@@ -115,13 +144,27 @@ export default function UserProfile() {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    padding: 12,
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    // paddingTop: 12,
+  },
+  rowContainer: {
+    width: "100%",
+    alignItems: "center",
+    // marginBottom: 8,
   },
   textContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 12,
+    paddingHorizontal: 30,
+    // backgroundColor: "#eee",
+    width: "100%",
+  },
+  text: {
     fontSize: 20,
-    padding: 8,
   },
   modalContainer: {
     flex: 1,

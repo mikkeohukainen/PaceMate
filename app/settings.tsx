@@ -56,9 +56,11 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   profile: {
+    fontSize: 20,
     width: "100%",
     textAlign: "left",
     padding: 16,
-    borderWidth: 1,
+    backgroundColor: "#eee",
+    // borderWidth: 1,
   },
 });

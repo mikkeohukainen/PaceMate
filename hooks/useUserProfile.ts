@@ -1,20 +1,20 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import ASyncstorage from "@react-native-async-storage/async-storage";
+import AsyncStogate from "@react-native-async-storage/async-storage";
 import { UserProfileType } from "@/types/interfaceTypes";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const USER_PROFILE_KEY = "@userProfile";
 
 // Check if device has user profile initialized, if not, then initialize it
 const checkIfUserProfileInitialized = async (): Promise<void> => {
   try {
-    const storedValue = await ASyncstorage.getItem(USER_PROFILE_KEY);
+    const storedValue = await AsyncStorage.getItem(USER_PROFILE_KEY);
     if (storedValue === null) {
       const initializeValues: UserProfileType = {
         Age: 0,
         Weight: 0,
         Height: 0,
       };
-      await ASyncstorage.setItem(
+      await AsyncStorage.setItem(
         USER_PROFILE_KEY,
         JSON.stringify(initializeValues)
       );
@@ -38,7 +38,7 @@ const validateUserProfile = (data: UserProfileType): boolean => {
 const saveUserProfile = async (dataToSave: UserProfileType): Promise<void> => {
   if (validateUserProfile(dataToSave)) {
     try {
-      await ASyncstorage.setItem(USER_PROFILE_KEY, JSON.stringify(dataToSave));
+      await AsyncStorage.setItem(USER_PROFILE_KEY, JSON.stringify(dataToSave));
       console.log("Saved data to storage with value:", dataToSave);
     } catch (error) {
       console.error("Failed to save data:", error);

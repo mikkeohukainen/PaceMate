@@ -12,6 +12,7 @@ import {
   getAllExercises,
 } from "@/database/exerciseService";
 import SaveExerciseModal from "@/components/SaveExerciseModal";
+import ExerciseCalendar from "@/components/ExerciseCalendar";
 import {
   checkIfUserProfileInitialized,
   deleteUserProfile,
@@ -128,10 +129,12 @@ export default function HomeScreen() {
             ? `${locationPoints[locationPoints.length - 1].latitude}, ${locationPoints[locationPoints.length - 1].longitude}`
             : "No location yet"}
         </Text>
-        <View style={styles.mapContainer}>
+
+        <View style={styles.mapCalendarContainer}>
           {locationPoints.length > 0 && (
             <MapRoute locationPoints={locationPoints} />
           )}
+          {!isTracking && !modalVisible && <ExerciseCalendar />}
         </View>
 
         <FAB
@@ -184,7 +187,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 0,
   },
-  mapContainer: {
+  mapCalendarContainer: {
     flex: 1,
     marginTop: 16,
   },

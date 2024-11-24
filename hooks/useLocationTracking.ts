@@ -3,7 +3,7 @@ import { useEffect, useRef, useContext } from "react";
 import { ExerciseContext } from "@/context/ExerciseContext";
 
 const useLocationTracking = () => {
-  const { addLocationPoint, isTracking, resetLocationPoints } =
+  const { addLocationPoint, isTracking, resetLocationPoints, updateAccuracy } =
     useContext(ExerciseContext);
   const locationSubscription = useRef<Location.LocationSubscription | null>(
     null
@@ -18,6 +18,7 @@ const useLocationTracking = () => {
       }
 
       resetLocationPoints();
+      updateAccuracy(-1); // reset accuracy
 
       locationSubscription.current = await Location.watchPositionAsync(
         {
@@ -26,7 +27,15 @@ const useLocationTracking = () => {
           distanceInterval: 1,
         },
         (location: Location.LocationObject) => {
-          console.log("New location: ", location);
+          const accuracy = location.coords.accuracy || -1;
+          console.log("New location. Accuracy:", accuracy);
+          updateAccuracy(accuracy);
+
+          if (accuracy > 20) {
+            console.log("Discarding location point due to low accuracy");
+            return;
+          }
+
           addLocationPoint({
             timestamp: new Date(location.timestamp).toISOString(),
             latitude: location.coords.latitude,

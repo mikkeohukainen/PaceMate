@@ -13,6 +13,7 @@ import {
 } from "@/database/exerciseService";
 import SaveExerciseModal from "@/components/SaveExerciseModal";
 import ExerciseCalendar from "@/components/ExerciseCalendar";
+import ExerciseStats from "@/components/exerciseStats/ExerciseStats";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -126,7 +127,10 @@ export default function HomeScreen() {
 
         <View style={styles.mapCalendarContainer}>
           {locationPoints.length > 0 && (
-            <MapRoute locationPoints={locationPoints} />
+            <>
+              <ExerciseStats />
+              <MapRoute locationPoints={locationPoints} />
+            </>
           )}
           {!isTracking && !modalVisible && <ExerciseCalendar />}
         </View>
@@ -173,7 +177,7 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 16,
     overflow: "hidden",
-    padding: 32,
+    padding: 16,
   },
   fab: {
     bottom: 0,

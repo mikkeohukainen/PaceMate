@@ -2,6 +2,8 @@ import * as Location from "expo-location";
 import { useEffect, useRef, useContext } from "react";
 import { ExerciseContext } from "@/context/ExerciseContext";
 
+export const GPS_TRACKING_THRESHOLD = 20; // threshold for GPS accuracy in meters (lower is better), location points with higher accuracy value will be discarded
+
 const useLocationTracking = () => {
   const { addLocationPoint, isTracking, resetLocationPoints, updateAccuracy } =
     useContext(ExerciseContext);
@@ -31,8 +33,11 @@ const useLocationTracking = () => {
           console.log("New location. Accuracy:", accuracy);
           updateAccuracy(accuracy);
 
-          if (accuracy > 20) {
-            console.log("Discarding location point due to low accuracy");
+          if (accuracy > GPS_TRACKING_THRESHOLD) {
+            console.log(
+              "Discarding location point due to low accuracy. Limit:",
+              GPS_TRACKING_THRESHOLD
+            );
             return;
           }
 

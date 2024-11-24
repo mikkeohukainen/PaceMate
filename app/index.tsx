@@ -14,6 +14,7 @@ import {
 import SaveExerciseModal from "@/components/SaveExerciseModal";
 import ExerciseCalendar from "@/components/ExerciseCalendar";
 import ExerciseStats from "@/components/exerciseStats/ExerciseStats";
+import GpsAccuracyIndicator from "@/components/gps/AccuracyIndicator";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -28,6 +29,7 @@ export default function HomeScreen() {
     resetLocationPoints,
     currentSteps,
     setCurrentSteps,
+    currentAccuracy,
   } = useContext(ExerciseContext);
 
   useEffect(() => {
@@ -109,26 +111,19 @@ export default function HomeScreen() {
         <Appbar.Action icon="cog" onPress={() => router.push("/settings")} />
       </Appbar.Header>
       <View style={styles.content}>
-        {/* Pedometer test */}
-        {currentSteps > 0 && isTracking ? (
-          <Text>{currentSteps}</Text>
-        ) : (
-          <Text>Pedometer not in use</Text>
-        )}
         {locationPoints.length === 0 && isTracking && (
-          <Text>Connecting...</Text>
+          <>
+            <Text style={styles.startingExerciseText}>
+              Starting Exercise...
+            </Text>
+            <GpsAccuracyIndicator accuracy={currentAccuracy} />
+          </>
         )}
-        <Text>
-          Last location:{" "}
-          {locationPoints.length > 0
-            ? `${locationPoints[locationPoints.length - 1].latitude}, ${locationPoints[locationPoints.length - 1].longitude}`
-            : "No location yet"}
-        </Text>
-
         <View style={styles.mapCalendarContainer}>
           {locationPoints.length > 0 && (
             <>
               <ExerciseStats />
+              <GpsAccuracyIndicator accuracy={currentAccuracy} />
               <MapRoute locationPoints={locationPoints} />
             </>
           )}
@@ -187,6 +182,10 @@ const styles = StyleSheet.create({
   },
   mapCalendarContainer: {
     flex: 1,
-    marginTop: 16,
+  },
+  startingExerciseText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 8,
   },
 });

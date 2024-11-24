@@ -57,6 +57,10 @@ export default function RootLayout() {
                 name="exerciseDetails/[id]"
                 options={{ headerTitle: "Exercise details" }}
               />
+              <Stack.Screen
+                  name="userProfile"
+                  options={{ headerTitle: "User profile" }}
+                />
             </Stack>
           </View>
           <StatusBar style="auto" />

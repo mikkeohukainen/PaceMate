@@ -13,6 +13,10 @@ import {
 } from "@/database/exerciseService";
 import SaveExerciseModal from "@/components/SaveExerciseModal";
 import ExerciseCalendar from "@/components/ExerciseCalendar";
+import {
+  checkIfUserProfileInitialized,
+  deleteUserProfile,
+} from "@/hooks/useUserProfile";
 import ExerciseStats from "@/components/exerciseStats/ExerciseStats";
 import GpsAccuracyIndicator from "@/components/gps/AccuracyIndicator";
 
@@ -36,6 +40,8 @@ export default function HomeScreen() {
     (async () => {
       await initDB();
       console.log("Database initialized");
+      // await deleteUserProfile(); // Delete user profile for testing
+      await checkIfUserProfileInitialized(); // Initialize profile if not already done
     })();
   }, []);
 

@@ -116,50 +116,61 @@ const CalendarScreen = () => {
   };
 
   return (
-    <Agenda
-      items={items}
-      selected={new Date().toISOString().split("T")[0]}
-      renderItem={renderItem}
-      rowHasChanged={rowHasChanged}
-      markedDates={markedDates}
-      renderEmptyData={renderEmptyData}
-      pastScrollRange={3}
-      futureScrollRange={1}
-      onRefresh={onRefresh}
-      refreshing={refreshing}
-      style={{ borderRadius: theme.roundness }}
-      theme={{
-        agendaDayNumColor: theme.colors.onBackground,
-        agendaDayTextColor: theme.colors.onBackground,
-        agendaKnobColor: theme.colors.inversePrimary,
-        textInactiveColor: theme.colors.onBackground,
-        agendaTodayColor: theme.colors.primary,
-        backgroundColor: theme.colors.background,
-        calendarBackground: theme.colors.elevation.level5,
-        dayTextColor: theme.colors.onBackground,
-        monthTextColor: theme.colors.onBackground,
-        reservationsBackgroundColor: theme.colors.background,
-        selectedDayBackgroundColor: theme.colors.primary,
-        selectedDayTextColor: theme.colors.onPrimary,
-        textSectionTitleColor: theme.colors.onBackground,
-        todayDotColor: theme.colors.inversePrimary,
-        todayTextColor: theme.colors.onBackground,
-        selectedDotColor: theme.colors.inversePrimary,
-        indicatorColor: theme.colors.secondary,
-        dotColor: theme.colors.secondary,
-        textDisabledColor: theme.colors.backdrop,
-      }}
-      // Workaround for https://github.com/wix/react-native-calendars/issues/1209
-      key={theme.dark ? "dark" : "light"}
-    />
+    <View style={styles.container}>
+      <Text variant="headlineSmall" style={styles.headerText}>
+        Exercise history
+      </Text>
+      <Agenda
+        items={items}
+        selected={new Date().toISOString().split("T")[0]}
+        renderItem={renderItem}
+        rowHasChanged={rowHasChanged}
+        markedDates={markedDates}
+        renderEmptyData={renderEmptyData}
+        pastScrollRange={2}
+        futureScrollRange={1}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
+        style={{ borderRadius: theme.roundness }}
+        theme={{
+          agendaDayNumColor: theme.colors.onBackground,
+          agendaDayTextColor: theme.colors.onBackground,
+          agendaKnobColor: theme.colors.inversePrimary,
+          textInactiveColor: theme.colors.onBackground,
+          agendaTodayColor: theme.colors.primary,
+          backgroundColor: theme.colors.background,
+          calendarBackground: theme.colors.elevation.level5,
+          dayTextColor: theme.colors.onBackground,
+          monthTextColor: theme.colors.onBackground,
+          reservationsBackgroundColor: theme.colors.background,
+          selectedDayBackgroundColor: theme.colors.primary,
+          selectedDayTextColor: theme.colors.onPrimary,
+          textSectionTitleColor: theme.colors.onBackground,
+          todayDotColor: theme.colors.inversePrimary,
+          todayTextColor: theme.colors.onBackground,
+          selectedDotColor: theme.colors.inversePrimary,
+          indicatorColor: theme.colors.secondary,
+          dotColor: theme.colors.secondary,
+          textDisabledColor: theme.colors.backdrop,
+        }}
+        // Workaround for https://github.com/wix/react-native-calendars/issues/1209
+        key={theme.dark ? "dark" : "light"}
+      />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   emptyDate: {
     alignItems: "center",
     flex: 1,
     justifyContent: "center",
+  },
+  headerText: {
+    margin: 16,
   },
 });
 

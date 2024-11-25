@@ -12,6 +12,16 @@ export const ExerciseItem = ({ item }: ExerciseItemProps) => {
   const router = useRouter();
   const startTime = new Date(item.start_time || "");
 
+  const formatTime = (seconds: number): string => {
+    const secondsInt = Math.round(seconds);
+    const hrs = Math.floor(secondsInt / 3600);
+    const mins = Math.floor((secondsInt % 3600) / 60);
+    const secs = secondsInt % 60;
+    return `${hrs.toString().padStart(2, "0")}:${mins
+      .toString()
+      .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
+
   return (
     <Card
       style={styles.card}
@@ -23,7 +33,8 @@ export const ExerciseItem = ({ item }: ExerciseItemProps) => {
       }}
     >
       <Card.Title
-        title={`${capitalize(item.type ?? "Exercise")} on ${startTime.toLocaleDateString()} at ${startTime.toLocaleTimeString()}`}
+        title={`${capitalize(item.type ?? "Exercise")}`}
+        subtitle={`${startTime.toLocaleDateString()} at ${startTime.toLocaleTimeString()}`}
         left={(props) => (
           <List.Icon
             {...props}
@@ -40,7 +51,7 @@ export const ExerciseItem = ({ item }: ExerciseItemProps) => {
       <Card.Content>
         <View style={styles.cardContent}>
           <Text style={styles.cardText}>
-            Duration: {item.duration?.toFixed(2)} s
+            Duration: {formatTime(item.duration ?? 0)}
           </Text>
           <Text style={styles.cardText}>
             Distance: {item.distance?.toFixed(2)} km

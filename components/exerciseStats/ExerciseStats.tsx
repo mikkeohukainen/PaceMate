@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 import { ExerciseContext } from "@/context/ExerciseContext";
-import haversine from "haversine";
 import StatCard from "./StatCard";
+import { calculateTimeInHours, calculateTotalDistance } from "@/lib/route";
 
-const ExerciseStats: React.FC = () => {
+const ExerciseStats = () => {
   const { locationPoints, currentSteps, isTracking } =
     useContext(ExerciseContext);
-  const [distance, setDistance] = useState<number>(0);
-  const [time, setTime] = useState<number>(0);
-  const [averageSpeed, setAverageSpeed] = useState<number>(0);
+  const [distance, setDistance] = useState(0);
+  const [time, setTime] = useState(0);
+  const [averageSpeed, setAverageSpeed] = useState(0);
 
   useEffect(() => {
     let timer: ReturnType<typeof setInterval> | null = null;
@@ -31,44 +31,13 @@ const ExerciseStats: React.FC = () => {
   }, [isTracking]);
 
   useEffect(() => {
-    const nrOfPoints = locationPoints.length;
-    if (nrOfPoints < 2) return;
-
-    const calculateStats = (): void => {
-      const calculateTotalDistance = () => {
-        let totalDistance = 0;
-        for (let i = 0; i < nrOfPoints - 1; i++) {
-          const startPoint = {
-            latitude: locationPoints[i].latitude,
-            longitude: locationPoints[i].longitude,
-          };
-          const endPoint = {
-            latitude: locationPoints[i + 1].latitude,
-            longitude: locationPoints[i + 1].longitude,
-          };
-          totalDistance += haversine(startPoint, endPoint, { unit: "km" });
-        }
-        return totalDistance;
-      };
-
-      const calculateTimeInHours = () => {
-        const startTime = new Date(locationPoints[0].timestamp).getTime();
-        const endTime = new Date(
-          locationPoints[nrOfPoints - 1].timestamp
-        ).getTime();
-        return (endTime - startTime) / 1000 / 60 / 60;
-      };
-
-      const totalDistance = calculateTotalDistance();
-      const totalTimeHours = calculateTimeInHours();
-      const averageSpeed =
-        totalTimeHours > 0 ? totalDistance / totalTimeHours : 0;
-
-      setAverageSpeed(averageSpeed);
-      setDistance(totalDistance);
-    };
-
-    calculateStats();
+    if (locationPoints.length < 2) return;
+    const totalDistance = calculateTotalDistance(locationPoints);
+    const totalTimeHours = calculateTimeInHours(locationPoints);
+    const averageSpeed =
+      totalTimeHours > 0 ? totalDistance / totalTimeHours : 0;
+    setAverageSpeed(averageSpeed);
+    setDistance(totalDistance);
   }, [locationPoints]);
 
   const formatTime = (seconds: number): string => {

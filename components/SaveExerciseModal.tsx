@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { ExerciseType } from "@/lib/exercise";
+import { useState } from "react";
 import {
   Dialog,
   Portal,
@@ -10,16 +11,16 @@ import {
 interface SaveExerciseModalProps {
   visible: boolean;
   onDismiss: () => void;
-  onSave: (exerciseType: string) => void;
+  onSave: (exerciseType: ExerciseType) => void;
 }
 
-const SaveExerciseModal: React.FC<SaveExerciseModalProps> = ({
+const SaveExerciseModal = ({
   visible,
   onDismiss,
   onSave,
-}) => {
+}: SaveExerciseModalProps) => {
   const theme = useTheme();
-  const [exerciseType, setExerciseType] = useState<string>("Running");
+  const [exerciseType, setExerciseType] = useState<ExerciseType>("running");
 
   return (
     <Portal>
@@ -27,12 +28,12 @@ const SaveExerciseModal: React.FC<SaveExerciseModalProps> = ({
         <Dialog.Title>Save Exercise</Dialog.Title>
         <Dialog.Content>
           <RadioButton.Group
-            onValueChange={(value) => setExerciseType(value)}
+            onValueChange={(value) => setExerciseType(value as ExerciseType)}
             value={exerciseType}
           >
-            <RadioButton.Item label="Running" value="Running" />
-            <RadioButton.Item label="Walking" value="Walking" />
-            <RadioButton.Item label="Cycling" value="Cycling" />
+            <RadioButton.Item label="Running" value="running" />
+            <RadioButton.Item label="Walking" value="walking" />
+            <RadioButton.Item label="Cycling" value="cycling" />
           </RadioButton.Group>
         </Dialog.Content>
         <Dialog.Actions>

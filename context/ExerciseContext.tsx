@@ -1,5 +1,5 @@
-import React, { createContext, useState, ReactNode } from "react";
-import { LocationPoint } from "@/database/exerciseService";
+import { createContext, useState, ReactNode } from "react";
+import { LocationPoint } from "@/lib/route";
 
 interface ExerciseProviderProps {
   children: ReactNode;
@@ -29,9 +29,7 @@ export const ExerciseContext = createContext<ExerciseContextType>({
   updateAccuracy: () => {},
 });
 
-export const ExerciseProvider: React.FC<ExerciseProviderProps> = ({
-  children,
-}) => {
+export const ExerciseProvider = ({ children }: ExerciseProviderProps) => {
   const [locationPoints, setLocationPoints] = useState<LocationPoint[]>([]);
   const [isTracking, setIsTracking] = useState(false);
   const [currentSteps, setCurrentSteps] = useState(0);

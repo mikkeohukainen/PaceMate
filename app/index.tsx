@@ -16,6 +16,7 @@ import ExerciseCalendar from "@/components/ExerciseCalendar";
 import { checkIfUserProfileInitialized } from "@/lib/profile";
 import ExerciseStats from "@/components/exerciseStats/ExerciseStats";
 import GpsAccuracyIndicator from "@/components/gps/AccuracyIndicator";
+import { ExerciseType } from "@/lib/exercise";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -50,7 +51,7 @@ export default function HomeScreen() {
     setModalVisible(true);
   };
 
-  const handleSaveExercise = async (exerciseType: string) => {
+  const handleSaveExercise = async (exerciseType: ExerciseType) => {
     setModalVisible(false);
 
     // Save the data to SQLite
@@ -127,7 +128,11 @@ export default function HomeScreen() {
             <>
               <ExerciseStats />
               <GpsAccuracyIndicator accuracy={currentAccuracy} />
-              <MapRoute locationPoints={locationPoints} />
+              <MapRoute
+                locationPoints={locationPoints}
+                showsUserLocation
+                followsUserLocation
+              />
             </>
           )}
           {!isTracking && !modalVisible && <ExerciseCalendar />}
@@ -175,7 +180,7 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: 16,
     overflow: "hidden",
-    padding: 16,
+    padding: 8,
   },
   fab: {
     bottom: 0,

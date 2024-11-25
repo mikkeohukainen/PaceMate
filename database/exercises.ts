@@ -1,18 +1,21 @@
-import { getDatabase, Exercise, CompletedExercise } from "./database";
+import { CompletedExercise, Exercise } from "@/lib/exercise";
+import { getDatabase } from "./database";
 
 export const exerciseQueries = {
   // create an empty exercise and return the id
   async createEmpty(): Promise<number> {
     const db = await getDatabase();
-    const query = "INSERT INTO exercises DEFAULT VALUES";
-    const { lastInsertRowId } = await db.runAsync(query);
+    const { lastInsertRowId } = await db.runAsync(
+      "INSERT INTO exercises DEFAULT VALUES"
+    );
     return lastInsertRowId;
   },
 
   // update an exercise
   async update(exercise: CompletedExercise): Promise<void> {
     const db = await getDatabase();
-    const query = `
+    await db.runAsync(
+      `
       UPDATE exercises
       SET
         type = ?,
@@ -23,33 +26,25 @@ export const exerciseQueries = {
         avg_speed = ?,
         steps = ?
       WHERE id = ?
-    `;
-    const params: [
-      string,
-      string,
-      string,
-      number | null,
-      number | null,
-      number | null,
-      number | null,
-      number,
-    ] = [
-      exercise.type,
-      exercise.start_time,
-      exercise.end_time,
-      exercise.duration,
-      exercise.distance,
-      exercise.avg_speed,
-      exercise.steps,
-      exercise.id,
-    ];
-    await db.runAsync(query, params);
+    `,
+      [
+        exercise.type,
+        exercise.start_time,
+        exercise.end_time,
+        exercise.duration,
+        exercise.distance,
+        exercise.avg_speed,
+        exercise.steps,
+        exercise.id,
+      ]
+    );
   },
 
   // create an exercise
   async create(exercise: Omit<Exercise, "id">): Promise<number> {
     const db = await getDatabase();
-    const query = `
+    const { lastInsertRowId } = await db.runAsync(
+      `
       INSERT INTO exercises (
         type,
         start_time,
@@ -60,60 +55,38 @@ export const exerciseQueries = {
         steps
       )
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `;
-    const params: [
-      string | null,
-      string | null,
-      string | null,
-      number | null,
-      number | null,
-      number | null,
-      number | null,
-    ] = [
-      exercise.type,
-      exercise.start_time,
-      exercise.end_time,
-      exercise.duration,
-      exercise.distance,
-      exercise.avg_speed,
-      exercise.steps,
-    ];
-    const { lastInsertRowId } = await db.runAsync(query, params);
+    `,
+      [
+        exercise.type,
+        exercise.start_time,
+        exercise.end_time,
+        exercise.duration,
+        exercise.distance,
+        exercise.avg_speed,
+        exercise.steps,
+      ]
+    );
     return lastInsertRowId;
   },
 
   // find all exercises
   async findAll(): Promise<Exercise[]> {
     const db = await getDatabase();
-    const query = `
-      SELECT *
-      FROM exercises
-      ORDER BY start_time DESC
-    `;
-    return await db.getAllAsync<Exercise>(query);
+    return await db.getAllAsync<Exercise>(
+      "SELECT * FROM exercises ORDER BY start_time DESC"
+    );
   },
 
   async delete(id: number): Promise<void> {
     const db = await getDatabase();
-    const query = `
-      DELETE FROM exercises
-      WHERE id = ?
-    `;
-    await db.runAsync(query, [id]);
+    await db.runAsync("DELETE FROM exercises WHERE id = ?", [id]);
   },
 
   async findById(id: number): Promise<Exercise | null> {
     const db = await getDatabase();
-    const query = `
-      SELECT *
-      FROM exercises
-      WHERE id = ?
-    `;
-    const results = await db.getAllAsync<Exercise>(query, [id]);
-    if (results.length > 0) {
-      return results[0];
-    } else {
-      return null;
-    }
+    return await db.getFirstAsync<Exercise>(
+      "SELECT * FROM exercises WHERE id = ?",
+      [id]
+    );
   },
 };

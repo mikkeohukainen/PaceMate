@@ -1,34 +1,5 @@
 import * as SQLite from "expo-sqlite";
 
-export interface Exercise {
-  id: number;
-  type: string | null;
-  start_time: string | null;
-  end_time: string | null;
-  duration: number | null;
-  distance: number | null;
-  avg_speed: number | null;
-  steps: number | null;
-}
-
-export interface CompletedExercise {
-  id: number;
-  type: string;
-  start_time: string;
-  end_time: string;
-  duration: number;
-  distance: number | null;
-  avg_speed: number | null;
-  steps: number | null;
-}
-
-export interface RoutePoint {
-  exercise_id: number;
-  timestamp: string;
-  latitude: number;
-  longitude: number;
-}
-
 let dbInstance: SQLite.SQLiteDatabase | null = null;
 
 export const getDatabase = async () => {
@@ -81,7 +52,6 @@ export const initDB = async () => {
   }
 };
 
-// can be used to wipe the database
 export const clearDatabase = async () => {
   try {
     const db = await getDatabase();

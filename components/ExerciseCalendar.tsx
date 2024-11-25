@@ -115,6 +115,10 @@ const CalendarScreen = () => {
     return entry1.exerciseId !== entry2.exerciseId;
   };
 
+  const renderDay = () => {
+    return <View />;
+  };
+
   return (
     <Agenda
       items={items}
@@ -151,6 +155,7 @@ const CalendarScreen = () => {
       }}
       // Workaround for https://github.com/wix/react-native-calendars/issues/1209
       key={theme.dark ? "dark" : "light"}
+      renderDay={renderDay}
     />
   );
 };

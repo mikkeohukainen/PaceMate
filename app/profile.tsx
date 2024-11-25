@@ -1,25 +1,13 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  Modal,
-  TouchableOpacity,
-  TextInput,
-} from "react-native";
-import React, { useEffect, useState } from "react";
-import {
-  loadUserProfile,
-  saveUserProfile,
-  deleteUserProfile,
-} from "@/hooks/useUserProfile";
-import { UserProfileType } from "@/types/interfaceTypes";
+import { View, StyleSheet, Modal, TouchableOpacity } from "react-native";
+import { useEffect, useState } from "react";
+import { Text, Button, TextInput } from "react-native-paper";
+import { loadUserProfile, saveUserProfile, UserProfile } from "@/lib/profile";
 import { useRouter } from "expo-router";
 
-export default function UserProfile() {
-  const [userProfile, setUserProfile] = useState<UserProfileType | null>(null);
+export default function Profile() {
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedKey, setSelectedKey] = useState<keyof UserProfileType | null>(
+  const [selectedKey, setSelectedKey] = useState<keyof UserProfile | null>(
     null
   );
   const [inputValue, setInputValue] = useState<string>("");
@@ -36,10 +24,7 @@ export default function UserProfile() {
   }, []);
 
   // Update userProfile by key/value and save it to device
-  const handleProfileUpdate = async (
-    key: keyof UserProfileType,
-    value: number
-  ) => {
+  const handleProfileUpdate = async (key: keyof UserProfile, value: number) => {
     if (userProfile) {
       const updatedProfile = { ...userProfile, [key]: value };
       setUserProfile(updatedProfile);
@@ -47,7 +32,7 @@ export default function UserProfile() {
     }
   };
 
-  const openModal = (key: keyof UserProfileType) => {
+  const openModal = (key: keyof UserProfile) => {
     setSelectedKey(key);
     setInputValue(userProfile ? userProfile[key].toString() : "");
     setModalVisible(true);
@@ -61,10 +46,10 @@ export default function UserProfile() {
   };
 
   const handleResetData = async () => {
-    const resetProfile: UserProfileType = {
-      Age: 0,
-      Weight: 0,
-      Height: 0,
+    const resetProfile: UserProfile = {
+      age: 0,
+      weight: 0,
+      height: 0,
     };
     await saveUserProfile(resetProfile);
     router.back();
@@ -80,43 +65,43 @@ export default function UserProfile() {
         <View style={styles.rowContainer}>
           <TouchableOpacity
             style={styles.textContainer}
-            onPress={() => openModal("Age")}
+            onPress={() => openModal("age")}
           >
             <Text style={styles.text}>Age</Text>
-            {userProfile.Age === 0 ? (
+            {userProfile.age === 0 ? (
               <Text style={styles.text}>not set</Text>
             ) : (
-              <Text style={styles.text}>{userProfile.Age}</Text>
+              <Text style={styles.text}>{userProfile.age}</Text>
             )}
           </TouchableOpacity>
         </View>
         <View style={styles.rowContainer}>
           <TouchableOpacity
             style={styles.textContainer}
-            onPress={() => openModal("Height")}
+            onPress={() => openModal("height")}
           >
             <Text style={styles.text}>Height</Text>
-            {userProfile.Height === 0 ? (
+            {userProfile.height === 0 ? (
               <Text style={styles.text}>not set</Text>
             ) : (
-              <Text style={styles.text}>{userProfile.Height}</Text>
+              <Text style={styles.text}>{userProfile.height}</Text>
             )}
           </TouchableOpacity>
         </View>
         <View style={styles.rowContainer}>
           <TouchableOpacity
             style={styles.textContainer}
-            onPress={() => openModal("Weight")}
+            onPress={() => openModal("weight")}
           >
             <Text style={styles.text}>Weight</Text>
-            {userProfile.Weight === 0 ? (
+            {userProfile.weight === 0 ? (
               <Text style={styles.text}>not set</Text>
             ) : (
-              <Text style={styles.text}>{userProfile.Weight}</Text>
+              <Text style={styles.text}>{userProfile.weight}</Text>
             )}
           </TouchableOpacity>
         </View>
-        <Button title="reset all" onPress={() => handleResetData()} />
+        <Button onPress={() => handleResetData()}>Reset all</Button>
       </View>
 
       <Modal
@@ -134,7 +119,7 @@ export default function UserProfile() {
               onChangeText={setInputValue}
               keyboardType="numeric"
             />
-            <Button title="Save" onPress={saveValue} />
+            <Button onPress={saveValue}>Save</Button>
           </View>
         </View>
       </Modal>
@@ -144,45 +129,42 @@ export default function UserProfile() {
 
 const styles = StyleSheet.create({
   container: {
+    alignItems: "center",
     flex: 1,
     justifyContent: "flex-start",
-    alignItems: "center",
     // paddingTop: 12,
   },
-  rowContainer: {
-    width: "100%",
-    alignItems: "center",
-    // marginBottom: 8,
+  input: {
+    height: 40,
+    marginBottom: 20,
+    paddingHorizontal: 10,
   },
-  textContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  modalContainer: {
     alignItems: "center",
-    padding: 12,
-    paddingHorizontal: 30,
-    // backgroundColor: "#eee",
+    backgroundColor: "rgba(0,0,0,0.5)",
+    flex: 1,
+    justifyContent: "center",
+  },
+  modalContent: {
+    borderRadius: 10,
+    padding: 20,
+    width: 300,
+  },
+  rowContainer: {
+    alignItems: "center",
     width: "100%",
+    // marginBottom: 8,
   },
   text: {
     fontSize: 20,
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
+  textContainer: {
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modalContent: {
-    width: 300,
-    padding: 20,
-    backgroundColor: "white",
-    borderRadius: 10,
-  },
-  input: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 20,
-    paddingHorizontal: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 12,
+    paddingHorizontal: 30,
+    // backgroundColor: "#eee",
+    width: "100%",
   },
 });

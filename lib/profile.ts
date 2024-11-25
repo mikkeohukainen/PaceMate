@@ -1,18 +1,22 @@
-import AsyncStogate from "@react-native-async-storage/async-storage";
-import { UserProfileType } from "@/types/interfaceTypes";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const USER_PROFILE_KEY = "@userProfile";
+
+export interface UserProfile {
+  age: number;
+  weight: number;
+  height: number;
+}
 
 // Check if device has user profile initialized, if not, then initialize it
 const checkIfUserProfileInitialized = async (): Promise<void> => {
   try {
     const storedValue = await AsyncStorage.getItem(USER_PROFILE_KEY);
     if (storedValue === null) {
-      const initializeValues: UserProfileType = {
-        Age: 0,
-        Weight: 0,
-        Height: 0,
+      const initializeValues: UserProfile = {
+        age: 0,
+        weight: 0,
+        height: 0,
       };
       await AsyncStorage.setItem(
         USER_PROFILE_KEY,
@@ -26,32 +30,18 @@ const checkIfUserProfileInitialized = async (): Promise<void> => {
   }
 };
 
-// herpderp validation of data
-const validateUserProfile = (data: UserProfileType): boolean => {
-  return (
-    typeof data.Age === "number" &&
-    typeof data.Weight === "number" &&
-    typeof data.Height === "number"
-  );
-};
-
-const saveUserProfile = async (dataToSave: UserProfileType): Promise<void> => {
-  if (validateUserProfile(dataToSave)) {
-    try {
-      await AsyncStorage.setItem(USER_PROFILE_KEY, JSON.stringify(dataToSave));
-      console.log("Saved data to storage with value:", dataToSave);
-    } catch (error) {
-      console.error("Failed to save data:", error);
-    }
-  } else {
-    console.error("Invalid data to save:", dataToSave);
+const saveUserProfile = async (dataToSave: UserProfile): Promise<void> => {
+  try {
+    await AsyncStorage.setItem(USER_PROFILE_KEY, JSON.stringify(dataToSave));
+    console.log("Saved data to storage with value:", dataToSave);
+  } catch (error) {
+    console.error("Failed to save data:", error);
   }
 };
 
-const loadUserProfile = async (): Promise<UserProfileType | null> => {
+const loadUserProfile = async (): Promise<UserProfile | null> => {
   try {
     const storedValue = await AsyncStorage.getItem(USER_PROFILE_KEY);
-    // console.log("Loaded data from storage with value:", storedValue);
     return storedValue ? JSON.parse(storedValue) : null;
   } catch (error) {
     console.error("Failed to load data:", error);

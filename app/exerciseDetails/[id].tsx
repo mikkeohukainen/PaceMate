@@ -9,11 +9,14 @@ import {
   LocationPoint,
 } from "@/database/exerciseService";
 import MapRoute from "@/components/gps/MapRoute";
+import { estimateCaloriesBurned } from "@/lib/calories";
+import { loadUserProfile, UserProfile } from "@/lib/profile";
 
 const ExerciseDetailsScreen: React.FC = () => {
   const { id } = useLocalSearchParams();
   const [exercise, setExercise] = useState<Exercise | null>(null);
   const [routePoints, setRoutePoints] = useState<LocationPoint[]>([]);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     const fetchExerciseDetails = async () => {
@@ -40,6 +43,12 @@ const ExerciseDetailsScreen: React.FC = () => {
     fetchExerciseDetails();
   }, [id]);
 
+  useEffect(() => {
+    (async () => {
+      setUserProfile(await loadUserProfile());
+    })();
+  }, []);
+
   if (!exercise) {
     return (
       <View style={styles.loadingContainer}>
@@ -62,7 +71,13 @@ const ExerciseDetailsScreen: React.FC = () => {
         <Text>Distance: {exercise.distance?.toFixed(2)} km</Text>
         <Text>Average Speed: {exercise.avg_speed?.toFixed(2)} km/h</Text>
         <Text>Steps: {exercise.steps ?? "N/A"}</Text>
-
+        <Text>
+          Calories burned:{" "}
+          {estimateCaloriesBurned(
+            exercise,
+            (userProfile && userProfile.weight) || 80
+          )}
+        </Text>
         {routePoints.length > 0 ? (
           <View style={styles.mapContainer}>
             <MapRoute locationPoints={routePoints} />

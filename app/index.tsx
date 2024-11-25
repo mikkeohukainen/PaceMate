@@ -13,10 +13,7 @@ import {
 } from "@/database/exerciseService";
 import SaveExerciseModal from "@/components/SaveExerciseModal";
 import ExerciseCalendar from "@/components/ExerciseCalendar";
-import {
-  checkIfUserProfileInitialized,
-  deleteUserProfile,
-} from "@/hooks/useUserProfile";
+import { checkIfUserProfileInitialized } from "@/lib/profile";
 import ExerciseStats from "@/components/exerciseStats/ExerciseStats";
 import GpsAccuracyIndicator from "@/components/gps/AccuracyIndicator";
 

@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Agenda, AgendaEntry } from "react-native-calendars";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { getAllExercises } from "@/database/exerciseService";
-import { Exercise } from "@/database/database";
 import { useRouter } from "expo-router";
-import { format } from "date-fns";
+import { Exercise } from "@/lib/exercise";
+import { useTheme, Text } from "react-native-paper";
+import { ExerciseItem } from "./ExerciseItem";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 interface MyAgendaEntry extends AgendaEntry {
   exerciseId: number;
@@ -15,7 +17,7 @@ interface MyAgendaSchedule {
   [key: string]: MyAgendaEntry[];
 }
 
-const CalendarScreen: React.FC = () => {
+const CalendarScreen = () => {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [items, setItems] = useState<MyAgendaSchedule>({});
   const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -23,6 +25,7 @@ const CalendarScreen: React.FC = () => {
     [key: string]: { marked: boolean };
   }>({});
   const router = useRouter();
+  const theme = useTheme();
 
   const fetchExercises = useCallback(async () => {
     try {
@@ -79,12 +82,8 @@ const CalendarScreen: React.FC = () => {
     const { exercise } = reservation as MyAgendaEntry;
     if (!exercise) return <View />;
 
-    const startTime = new Date(exercise.start_time || "");
-    const formattedTime = format(startTime, "pp");
-
     return (
       <TouchableOpacity
-        style={styles.item}
         onPress={() => {
           router.push({
             pathname: "/exerciseDetails/[id]",
@@ -92,20 +91,7 @@ const CalendarScreen: React.FC = () => {
           });
         }}
       >
-        <View>
-          <Text style={styles.itemTitle}>{exercise.type || "Exercise"}</Text>
-          <Text style={styles.itemText}>Time: {formattedTime}</Text>
-          <Text style={styles.itemText}>
-            Duration: {exercise.duration?.toFixed(2)} s
-          </Text>
-          <Text style={styles.itemText}>
-            Distance: {exercise.distance?.toFixed(2)} km
-          </Text>
-          <Text style={styles.itemText}>
-            Avg Speed: {exercise.avg_speed?.toFixed(2)} km/h
-          </Text>
-          <Text style={styles.itemText}>Steps: {exercise.steps ?? "N/A"}</Text>
-        </View>
+        <ExerciseItem item={exercise} />
       </TouchableOpacity>
     );
   };
@@ -113,7 +99,12 @@ const CalendarScreen: React.FC = () => {
   const renderEmptyData = () => {
     return (
       <View style={styles.emptyDate}>
-        <Text>No exercises for this day.</Text>
+        <MaterialCommunityIcons
+          name="emoticon-sad-outline"
+          size={128}
+          color={theme.colors.surfaceVariant}
+        />
+        <Text variant="bodyLarge">No exercises for this day.</Text>
       </View>
     );
   };
@@ -136,29 +127,39 @@ const CalendarScreen: React.FC = () => {
       futureScrollRange={1}
       onRefresh={onRefresh}
       refreshing={refreshing}
+      style={{ borderRadius: theme.roundness }}
+      theme={{
+        agendaDayNumColor: theme.colors.onBackground,
+        agendaDayTextColor: theme.colors.onBackground,
+        agendaKnobColor: theme.colors.inversePrimary,
+        textInactiveColor: theme.colors.onBackground,
+        agendaTodayColor: theme.colors.primary,
+        backgroundColor: theme.colors.background,
+        calendarBackground: theme.colors.elevation.level5,
+        dayTextColor: theme.colors.onBackground,
+        monthTextColor: theme.colors.onBackground,
+        reservationsBackgroundColor: theme.colors.background,
+        selectedDayBackgroundColor: theme.colors.primary,
+        selectedDayTextColor: theme.colors.onPrimary,
+        textSectionTitleColor: theme.colors.onBackground,
+        todayDotColor: theme.colors.inversePrimary,
+        todayTextColor: theme.colors.onBackground,
+        selectedDotColor: theme.colors.inversePrimary,
+        indicatorColor: theme.colors.secondary,
+        dotColor: theme.colors.secondary,
+        textDisabledColor: theme.colors.backdrop,
+      }}
+      // Workaround for https://github.com/wix/react-native-calendars/issues/1209
+      key={theme.dark ? "dark" : "light"}
     />
   );
 };
 
 const styles = StyleSheet.create({
   emptyDate: {
+    alignItems: "center",
     flex: 1,
-    height: 15,
-    margin: 30,
-  },
-  item: {
-    backgroundColor: "white",
-    borderRadius: 5,
-    marginRight: 10,
-    marginTop: 17,
-    padding: 10,
-  },
-  itemText: {
-    fontSize: 14,
-  },
-  itemTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
+    justifyContent: "center",
   },
 });
 

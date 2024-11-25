@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { Text } from "react-native-paper";
 import { useLocalSearchParams } from "expo-router";
-import { Exercise } from "@/database/database";
 import {
   getExerciseById,
   getRoutePointsByExerciseId,
-  LocationPoint,
 } from "@/database/exerciseService";
 import MapRoute from "@/components/gps/MapRoute";
 import { estimateCaloriesBurned } from "@/lib/calories";
 import { loadUserProfile, UserProfile } from "@/lib/profile";
+import { Exercise } from "@/lib/exercise";
+import { LocationPoint } from "@/lib/route";
+import { capitalize } from "@/lib/util";
 
-const ExerciseDetailsScreen: React.FC = () => {
+const ExerciseDetailsScreen = () => {
   const { id } = useLocalSearchParams();
   const [exercise, setExercise] = useState<Exercise | null>(null);
   const [routePoints, setRoutePoints] = useState<LocationPoint[]>([]);
@@ -64,7 +65,9 @@ const ExerciseDetailsScreen: React.FC = () => {
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        <Text variant="headlineMedium">{exercise.type || "Exercise"}</Text>
+        <Text variant="headlineMedium">
+          {capitalize(exercise.type ?? "Exercise")}
+        </Text>
         <Text>Date: {formattedDate}</Text>
         <Text>Time: {formattedTime}</Text>
         <Text>Duration: {exercise.duration?.toFixed(2)} seconds</Text>
@@ -80,7 +83,11 @@ const ExerciseDetailsScreen: React.FC = () => {
         </Text>
         {routePoints.length > 0 ? (
           <View style={styles.mapContainer}>
-            <MapRoute locationPoints={routePoints} />
+            <MapRoute
+              locationPoints={routePoints}
+              showsUserLocation={false}
+              followsUserLocation={false}
+            />
           </View>
         ) : (
           <Text>No route data available.</Text>

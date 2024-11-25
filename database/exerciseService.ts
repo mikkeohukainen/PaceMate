@@ -1,13 +1,12 @@
-import { Exercise, CompletedExercise, RoutePoint } from "./database";
+import { CompletedExercise, Exercise, ExerciseType } from "@/lib/exercise";
 import { exerciseQueries } from "./exercises";
 import { routePointQueries } from "./routePoints";
-import haversine from "haversine";
-
-export type LocationPoint = {
-  timestamp: string;
-  latitude: number;
-  longitude: number;
-};
+import {
+  calculateTotalDistance,
+  convertToRoutePoints,
+  LocationPoint,
+  RoutePoint,
+} from "@/lib/route";
 
 // use this to start a new exercise and get the id
 export const startExerciseAndGetID = () => exerciseQueries.createEmpty();
@@ -51,7 +50,7 @@ export const generateExerciseData = async (
 // this one can be used to save exercise AFTER COMPLETION using locationPoints
 // keep this here as backup
 export const saveExerciseWithRoute = async (
-  type: string,
+  type: ExerciseType,
   locationPoints: LocationPoint[],
   steps: number
 ): Promise<number> => {
@@ -84,39 +83,6 @@ export const saveExerciseWithRoute = async (
   return exerciseId;
 };
 
-// this function calculates the total distance from location points array
-export const calculateTotalDistance = (points: LocationPoint[]): number => {
-  if (points.length < 2) return 0;
-
-  let totalDistance = 0;
-  for (let i = 0; i < points.length - 1; i++) {
-    const currentPoint = points[i];
-    const nextPoint = points[i + 1];
-
-    const segmentDistance = haversine(
-      { latitude: currentPoint.latitude, longitude: currentPoint.longitude },
-      { latitude: nextPoint.latitude, longitude: nextPoint.longitude },
-      { unit: "km" }
-    );
-
-    totalDistance += segmentDistance;
-  }
-  return parseFloat(totalDistance.toFixed(3));
-};
-
-//converts location point to route points by adding exercise id
-export const convertToRoutePoints = (
-  exerciseId: number,
-  locationPoints: LocationPoint[]
-): RoutePoint[] => {
-  return locationPoints.map((point) => ({
-    exercise_id: exerciseId,
-    timestamp: new Date(point.timestamp).toISOString(),
-    latitude: point.latitude,
-    longitude: point.longitude,
-  }));
-};
-
 // save array of route points for an exercise
 export const saveRoutePoints = async (
   exerciseId: number,
@@ -130,13 +96,12 @@ export const saveSingleRoutePoint = async (
   exerciseId: number,
   locationPoint: LocationPoint
 ): Promise<void> => {
-  const routePoint = {
+  await routePointQueries.create({
     exercise_id: exerciseId,
     timestamp: new Date(locationPoint.timestamp).toISOString(),
     latitude: locationPoint.latitude,
     longitude: locationPoint.longitude,
-  };
-  await routePointQueries.create(routePoint);
+  });
 };
 
 // get all exercises in a date range

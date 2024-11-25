@@ -1,14 +1,13 @@
-import React from "react";
 import { StyleSheet } from "react-native";
 import { Card, Text } from "react-native-paper";
 
-export interface statCardProps {
+export interface StatCardProps {
   label: string;
   value: string | number;
   unit: string;
 }
 
-const StatCard: React.FC<statCardProps> = ({ label, value, unit }) => {
+const StatCard = ({ label, value, unit }: StatCardProps) => {
   return (
     <Card style={styles.statCard}>
       <Card.Content>
@@ -29,7 +28,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   statCard: {
-    backgroundColor: "#f3f4f6",
     width: "45%",
   },
   unit: {

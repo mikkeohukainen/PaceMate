@@ -1,4 +1,5 @@
-import { getDatabase, RoutePoint } from "./database";
+import { getDatabase } from "./database";
+import { RoutePoint } from "@/lib/route";
 
 export const routePointQueries = {
   // insert single route point into the database
@@ -7,19 +8,18 @@ export const routePointQueries = {
     const query = `
       INSERT INTO route_points (
         exercise_id,
-        timestamp, 
+        timestamp,
         latitude,
         longitude
       ) VALUES (?, ?, ?, ?)
     `;
 
-    const params = [
+    await db.runAsync(query, [
       point.exercise_id,
       point.timestamp,
       point.latitude,
       point.longitude,
-    ];
-    await db.runAsync(query, params);
+    ]);
   },
   // insert array of route points into the database
   async bulkCreate(routePoints: RoutePoint[]): Promise<void> {
@@ -27,21 +27,19 @@ export const routePointQueries = {
     const query = `
       INSERT INTO route_points (
         exercise_id,
-        timestamp, 
+        timestamp,
         latitude,
         longitude
       ) VALUES (?, ?, ?, ?)
     `;
 
     for (const point of routePoints) {
-      const params: [number, string, number, number] = [
+      await db.runAsync(query, [
         point.exercise_id,
         point.timestamp,
         point.latitude,
         point.longitude,
-      ];
-
-      await db.runAsync(query, params);
+      ]);
     }
   },
   // get all route points by exercise id

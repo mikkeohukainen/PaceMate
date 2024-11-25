@@ -127,7 +127,7 @@ const CalendarScreen = () => {
         rowHasChanged={rowHasChanged}
         markedDates={markedDates}
         renderEmptyData={renderEmptyData}
-        pastScrollRange={3}
+        pastScrollRange={2}
         futureScrollRange={1}
         onRefresh={onRefresh}
         refreshing={refreshing}

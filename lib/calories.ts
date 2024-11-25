@@ -1,4 +1,4 @@
-import { Exercise } from "@/database/database";
+import { Exercise } from "./exercise";
 
 const metabolicEquivalentOfTask = (
   exerciseType: string,

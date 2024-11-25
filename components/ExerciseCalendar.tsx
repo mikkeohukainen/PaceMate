@@ -6,7 +6,7 @@ import { useRouter } from "expo-router";
 import { Exercise } from "@/lib/exercise";
 import { useTheme, Text } from "react-native-paper";
 import { ExerciseItem } from "./ExerciseItem";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
 interface MyAgendaEntry extends AgendaEntry {
   exerciseId: number;
@@ -78,28 +78,31 @@ const CalendarScreen = () => {
     }
   }, [exercises]);
 
-  const renderItem = (reservation: AgendaEntry) => {
-    const { exercise } = reservation as MyAgendaEntry;
-    if (!exercise) return <View />;
+  const renderItem = useCallback(
+    (reservation: AgendaEntry) => {
+      const { exercise } = reservation as MyAgendaEntry;
+      if (!exercise) return <View />;
 
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          router.push({
-            pathname: "/exerciseDetails/[id]",
-            params: { id: exercise.id.toString() },
-          });
-        }}
-      >
-        <ExerciseItem item={exercise} />
-      </TouchableOpacity>
-    );
-  };
+      return (
+        <TouchableOpacity
+          onPress={() => {
+            router.push({
+              pathname: "/exerciseDetails/[id]",
+              params: { id: exercise.id.toString() },
+            });
+          }}
+        >
+          <ExerciseItem item={exercise} />
+        </TouchableOpacity>
+      );
+    },
+    [router]
+  );
 
-  const renderEmptyData = () => {
+  const renderEmptyData = useCallback(() => {
     return (
       <View style={styles.emptyDate}>
-        <MaterialCommunityIcons
+        <Icon
           name="emoticon-sad-outline"
           size={128}
           color={theme.colors.surfaceVariant}
@@ -107,7 +110,7 @@ const CalendarScreen = () => {
         <Text variant="bodyLarge">No exercises for this day.</Text>
       </View>
     );
-  };
+  }, [theme.colors.surfaceVariant]);
 
   const rowHasChanged = (r1: AgendaEntry, r2: AgendaEntry) => {
     const entry1 = r1 as MyAgendaEntry;
@@ -130,6 +133,7 @@ const CalendarScreen = () => {
         pastScrollRange={2}
         futureScrollRange={1}
         onRefresh={onRefresh}
+        showClosingKnob={true}
         refreshing={refreshing}
         style={{ borderRadius: theme.roundness }}
         theme={{

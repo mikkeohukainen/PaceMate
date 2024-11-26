@@ -55,7 +55,8 @@ export default function HomeScreen() {
     setModalVisible(false);
 
     // Save the data to SQLite
-    if (locationPoints.length > 0) {
+    // changed this from 0 to 1. At least 2 points are needed to calculate duration etc
+    if (locationPoints.length > 1) {
       try {
         const exerciseId = await saveExerciseWithRoute(
           exerciseType,

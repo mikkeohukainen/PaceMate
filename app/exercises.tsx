@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
-import { Text } from "react-native-paper";
+import { Text, SegmentedButtons } from "react-native-paper";
 import { getAllExercises } from "@/database/exerciseService";
 import { Exercise } from "@/lib/exercise";
 import { ExerciseItem } from "@/components/ExerciseItem";
-// import { format } from "date-fns";
 
 /*
 TODO:
@@ -15,12 +14,17 @@ TODO:
 export default function ExercisesScreen() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [selectedType, setSelectedType] = useState<string>("all");
 
   const fetchExercises = async () => {
     setLoading(true);
     try {
       const data = await getAllExercises();
-      setExercises(data);
+      //filter out exercises with no duration or duration of 0
+      const validData = data.filter(
+        (exercise) => exercise.duration != null && exercise.duration !== 0
+      );
+      setExercises(validData);
     } catch (error) {
       console.error("Error fetching exercises:", error);
     } finally {
@@ -32,10 +36,41 @@ export default function ExercisesScreen() {
     fetchExercises();
   }, []);
 
+  const getFilteredExercises = () => {
+    if (selectedType === "all") return exercises;
+    return exercises.filter((exercise) => exercise.type === selectedType);
+  };
+  const filteredExercises = getFilteredExercises();
+
   return (
     <View style={{ flex: 1 }}>
+      <SegmentedButtons
+        value={selectedType}
+        onValueChange={(value) => {
+          if (value !== selectedType) setSelectedType(value);
+        }}
+        buttons={[
+          {
+            value: "all",
+            label: "ALL",
+          },
+          {
+            value: "Running",
+            icon: "run",
+          },
+          {
+            value: "Walking",
+            icon: "walk",
+          },
+          {
+            value: "Cycling",
+            icon: "bike",
+          },
+        ]}
+        style={styles.segmentedButtons}
+      />
       <FlatList
-        data={exercises}
+        data={filteredExercises}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <ExerciseItem item={item} />}
         refreshControl={
@@ -63,5 +98,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     padding: 16,
+  },
+  segmentedButtons: {
+    marginHorizontal: 24,
+    marginTop: 16,
   },
 });

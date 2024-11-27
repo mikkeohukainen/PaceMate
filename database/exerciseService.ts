@@ -136,3 +136,16 @@ export const getRoutePointsByExerciseId = async (
 ): Promise<RoutePoint[]> => {
   return await routePointQueries.findByExerciseId(exerciseId);
 };
+
+export const getLastExerciseTime = async (): Promise<string | null> => {
+  try {
+    const exercises: Exercise[] = await exerciseQueries.findAll();
+    if (exercises.length > 0) {
+      return exercises[0].end_time || exercises[0].start_time || null;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching last exercise time:", error);
+    return null;
+  }
+};

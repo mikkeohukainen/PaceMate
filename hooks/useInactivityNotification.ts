@@ -41,9 +41,9 @@ TaskManager.defineTask(NOTIFICATION_TASK_NAME, async () => {
     const lastExerciseTimestamp = new Date(lastExerciseTime).getTime();
     const timeSinceLastExercise = now - lastExerciseTimestamp;
 
-    const testThreshold = 60 * 1000; // 1 minute for testing
+    // const testThreshold = 60 * 1000; // 1 minute for testing
 
-    if (timeSinceLastExercise >= testThreshold) {
+    if (timeSinceLastExercise >= thresholdMs) {
       console.log("Scheduling notification");
       // Send notification
       await Notifications.scheduleNotificationAsync({
@@ -81,7 +81,7 @@ export const useInactivityNotification = () => {
         );
         if (!isRegistered) {
           await BackgroundFetch.registerTaskAsync(NOTIFICATION_TASK_NAME, {
-            minimumInterval: 60, // 1 minute for testing
+            minimumInterval: 60 * 60, // 1 hour
             stopOnTerminate: false,
             startOnBoot: true,
           });

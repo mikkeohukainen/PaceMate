@@ -17,6 +17,7 @@ import { checkIfUserProfileInitialized } from "@/lib/profile";
 import ExerciseStats from "@/components/exerciseStats/ExerciseStats";
 import GpsAccuracyIndicator from "@/components/gps/AccuracyIndicator";
 import { ExerciseType } from "@/lib/exercise";
+import { useInactivityNotification } from "@/hooks/useInactivityNotification";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -45,6 +46,7 @@ export default function HomeScreen() {
 
   useLocationTracking();
   usePedometer();
+  useInactivityNotification();
 
   const handleStopTracking = () => {
     setIsTracking(false);

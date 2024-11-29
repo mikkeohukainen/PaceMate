@@ -34,7 +34,7 @@ export const ExerciseItem = ({ item }: ExerciseItemProps) => {
     >
       <Card.Title
         title={`${capitalize(item.type ?? "Exercise")}`}
-        subtitle={`${startTime.toLocaleDateString()} at ${startTime.toLocaleTimeString()}`}
+        subtitle={`${startTime.toLocaleDateString()} at ${startTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })}`}
         left={(props) => (
           <List.Icon
             {...props}

@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
-import { View, StyleSheet, FlatList, RefreshControl } from "react-native";
-import { Text, SegmentedButtons } from "react-native-paper";
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  RefreshControl,
+  ScrollView,
+} from "react-native";
+import { Text, SegmentedButtons, IconButton } from "react-native-paper";
 import { getAllExercises } from "@/database/exerciseService";
 import { Exercise } from "@/lib/exercise";
 import { ExerciseItem } from "@/components/ExerciseItem";
-
-/*
-TODO:
-    Format date?
-    Format card content?
- */
+import Summary from "../components/summary/Summary";
 
 export default function ExercisesScreen() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedType, setSelectedType] = useState<string>("all");
+  const [showSummary, setShowSummary] = useState<boolean>(false);
 
   const fetchExercises = async () => {
     setLoading(true);
@@ -40,50 +42,78 @@ export default function ExercisesScreen() {
     if (selectedType === "all") return exercises;
     return exercises.filter((exercise) => exercise.type === selectedType);
   };
+
+  const handleFilterChange = (value: string) => {
+    if (value !== selectedType) {
+      setShowSummary(false);
+      setSelectedType(value);
+    }
+  };
+
+  const handleSummaryToggle = () => {
+    setShowSummary(!showSummary);
+
+    // if goinf from showSummary to !showSummary reset selectedType to "all"
+    // otherwise clear selectedType
+    if (showSummary) {
+      setSelectedType("all");
+    } else {
+      setSelectedType("");
+    }
+  };
+
   const filteredExercises = getFilteredExercises();
 
-  return (
-    <View style={{ flex: 1 }}>
+  // filter button for each exercise type + toggle for showing summary stats
+  const filterControls = (
+    <View style={styles.filterContainer}>
       <SegmentedButtons
         value={selectedType}
-        onValueChange={(value) => {
-          if (value !== selectedType) setSelectedType(value);
-        }}
+        onValueChange={handleFilterChange}
         buttons={[
-          {
-            value: "all",
-            label: "ALL",
-          },
-          {
-            value: "Running",
-            icon: "run",
-          },
-          {
-            value: "Walking",
-            icon: "walk",
-          },
-          {
-            value: "Cycling",
-            icon: "bike",
-          },
+          { value: "all", label: "ALL" },
+          { value: "Walking", icon: "walk" },
+          { value: "Running", icon: "run" },
+          { value: "Cycling", icon: "bike" },
         ]}
         style={styles.segmentedButtons}
       />
-      <FlatList
-        data={filteredExercises}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <ExerciseItem item={item} />}
-        refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={fetchExercises} />
-        }
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text>No exercises recorded.</Text>
-          </View>
-        }
-        contentContainerStyle={exercises.length === 0 && styles.container}
-        style={styles.container}
+      <IconButton
+        icon="chart-bar"
+        mode={showSummary ? "contained" : "outlined"}
+        selected={showSummary}
+        onPress={handleSummaryToggle}
       />
+    </View>
+  );
+
+  // content is either a list of exercises or a summary of all exercises
+  const content = showSummary ? (
+    <ScrollView>
+      <Summary exercises={exercises} />
+    </ScrollView>
+  ) : (
+    <FlatList
+      data={filteredExercises}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={({ item }) => <ExerciseItem item={item} />}
+      refreshControl={
+        <RefreshControl refreshing={loading} onRefresh={fetchExercises} />
+      }
+      ListEmptyComponent={
+        <View style={styles.emptyContainer}>
+          <Text>No exercises recorded.</Text>
+        </View>
+      }
+      contentContainerStyle={exercises.length === 0 && styles.container}
+      style={styles.container}
+    />
+  );
+
+  return (
+    <View>
+      {filterControls}
+      {content}
     </View>
   );
 }
@@ -91,7 +121,7 @@ export default function ExercisesScreen() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    marginTop: 8,
+    paddingHorizontal: 8,
   },
   emptyContainer: {
     alignItems: "center",
@@ -99,8 +129,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 16,
   },
+  filterContainer: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 16,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
   segmentedButtons: {
-    marginHorizontal: 24,
-    marginTop: 16,
+    flex: 1,
   },
 });

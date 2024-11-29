@@ -1,5 +1,6 @@
 import { StyleSheet, View, Text } from "react-native";
 import { useRouter } from "expo-router";
+import NotificationSettings from "@/components/NotificationSettings";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -11,6 +12,7 @@ export default function SettingsScreen() {
           Profile
         </Text>
       </View>
+      <NotificationSettings />
     </>
   );
 }

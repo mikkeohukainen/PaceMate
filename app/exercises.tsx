@@ -40,7 +40,11 @@ export default function ExercisesScreen() {
 
   const getFilteredExercises = () => {
     if (selectedType === "all") return exercises;
-    return exercises.filter((exercise) => exercise.type === selectedType);
+    return exercises.filter(
+      (exercise) =>
+        exercise.type === selectedType ||
+        exercise.type === selectedType.toLowerCase()
+    );
   };
 
   const handleFilterChange = (value: string) => {

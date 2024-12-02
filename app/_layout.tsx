@@ -58,10 +58,6 @@ export default function RootLayout() {
                 options={{ headerTitle: "Exercise details" }}
               />
               <Stack.Screen
-                name="profile"
-                options={{ headerTitle: "Profile" }}
-              />
-              <Stack.Screen
                 name="exercises"
                 options={{ headerTitle: "Exercise History" }}
               />

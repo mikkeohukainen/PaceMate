@@ -1,4 +1,4 @@
-import MapView, { Polyline, Region } from "react-native-maps";
+import MapView, { Polyline, Region, Marker } from "react-native-maps";
 import { StyleSheet, View } from "react-native";
 import { LocationPoint } from "@/lib/route";
 import { useTheme } from "react-native-paper";
@@ -8,12 +8,14 @@ type MapRouteProps = {
   locationPoints: LocationPoint[];
   showsUserLocation?: boolean;
   followsUserLocation?: boolean;
+  showMarkers?: boolean;
 };
 
 const MapRoute = ({
   locationPoints,
   showsUserLocation,
   followsUserLocation,
+  showMarkers,
 }: MapRouteProps) => {
   const theme = useTheme();
   const initialRegion: Region = {
@@ -40,6 +42,26 @@ const MapRoute = ({
           strokeWidth={4}
           strokeColor={theme.dark ? "lightblue" : "darkblue"}
         />
+        {showMarkers && (
+          <>
+            <Marker
+              title="Start"
+              pinColor="green"
+              coordinate={{
+                latitude: locationPoints[0]?.latitude,
+                longitude: locationPoints[0]?.longitude,
+              }}
+            />
+            <Marker
+              title="End"
+              pinColor="red"
+              coordinate={{
+                latitude: locationPoints[locationPoints.length - 1]?.latitude,
+                longitude: locationPoints[locationPoints.length - 1]?.longitude,
+              }}
+            />
+          </>
+        )}
       </MapView>
     </View>
   );

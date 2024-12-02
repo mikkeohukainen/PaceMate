@@ -135,6 +135,7 @@ export default function HomeScreen() {
                 locationPoints={locationPoints}
                 showsUserLocation
                 followsUserLocation
+                showMarkers={false}
               />
             </>
           )}

@@ -60,6 +60,7 @@ const ExerciseDetailsScreen = () => {
 
   return (
     <TabView
+      lazy={true}
       navigationState={{ index: tabIndex, routes }}
       renderScene={(props) => {
         switch (props.route.key) {

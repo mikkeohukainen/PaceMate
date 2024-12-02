@@ -69,8 +69,6 @@ export const estimateCaloriesBurned = (
     return 0;
   }
 
-  console.log("user weight: ", weight);
-
   const met = metabolicEquivalentOfTask(type, avg_speed);
   if (met <= 0) return 0;
 

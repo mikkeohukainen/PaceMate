@@ -1,23 +1,31 @@
 import { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
-import { Text } from "react-native-paper";
+import { useWindowDimensions } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import {
   getExerciseById,
   getRoutePointsByExerciseId,
 } from "@/database/exerciseService";
-import MapRoute from "@/components/gps/MapRoute";
-import { estimateCaloriesBurned } from "@/lib/calories";
 import { loadUserProfile, UserProfile } from "@/lib/profile";
 import { Exercise } from "@/lib/exercise";
 import { LocationPoint } from "@/lib/route";
-import { capitalize } from "@/lib/util";
+import { TabView, TabBar } from "react-native-tab-view";
+import ExerciseOverview from "@/components/exerciseDetails/ExerciseOverview";
+import ExerciseGraph from "@/components/exerciseDetails/ExerciseGraph";
+import { Icon, useTheme } from "react-native-paper";
+
+const routes = [
+  { key: "overview", title: "Overview", icon: "map" },
+  { key: "graph", title: "Graph", icon: "chart-line" },
+];
 
 const ExerciseDetailsScreen = () => {
   const { id } = useLocalSearchParams();
+  const theme = useTheme();
+  const layout = useWindowDimensions();
   const [exercise, setExercise] = useState<Exercise | null>(null);
   const [routePoints, setRoutePoints] = useState<LocationPoint[]>([]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [tabIndex, setTabIndex] = useState(0);
 
   useEffect(() => {
     const fetchExerciseDetails = async () => {
@@ -50,67 +58,53 @@ const ExerciseDetailsScreen = () => {
     })();
   }, []);
 
-  if (!exercise) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading exercise details...</Text>
-      </View>
-    );
-  }
-
-  const startTime = new Date(exercise.start_time || "");
-  const formattedDate = startTime.toLocaleDateString();
-  const formattedTime = startTime.toLocaleTimeString();
-
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        <Text variant="headlineMedium">
-          {capitalize(exercise.type ?? "Exercise")}
-        </Text>
-        <Text>Date: {formattedDate}</Text>
-        <Text>Time: {formattedTime}</Text>
-        <Text>Duration: {exercise.duration?.toFixed(2)} seconds</Text>
-        <Text>Distance: {exercise.distance?.toFixed(2)} km</Text>
-        <Text>Average Speed: {exercise.avg_speed?.toFixed(2)} km/h</Text>
-        <Text>Steps: {exercise.steps ?? "N/A"}</Text>
-        <Text>
-          Calories burned:{" "}
-          {estimateCaloriesBurned(
-            exercise,
-            (userProfile && userProfile.weight) || 80
-          )}
-        </Text>
-        {routePoints.length > 0 ? (
-          <View style={styles.mapContainer}>
-            <MapRoute
-              locationPoints={routePoints}
-              showsUserLocation={false}
-              followsUserLocation={false}
-            />
-          </View>
-        ) : (
-          <Text>No route data available.</Text>
-        )}
-      </ScrollView>
-    </View>
+    <TabView
+      navigationState={{ index: tabIndex, routes }}
+      renderScene={(props) => {
+        switch (props.route.key) {
+          case "overview":
+            return (
+              <ExerciseOverview
+                exercise={exercise}
+                userProfile={userProfile}
+                routePoints={routePoints}
+              />
+            );
+          case "graph":
+            return <ExerciseGraph exercise={exercise!} points={routePoints} />;
+          default:
+            return null;
+        }
+      }}
+      renderTabBar={(props) => (
+        <TabBar
+          {...props}
+          style={{
+            backgroundColor: theme.colors.surface,
+            height: 64,
+            borderColor: theme.colors.outlineVariant,
+          }}
+          tabStyle={{ height: 64 }}
+          pressColor="transparent"
+          activeColor={theme.colors.primary}
+          inactiveColor={theme.colors.onSurfaceVariant}
+          indicatorStyle={{ backgroundColor: theme.colors.primary }}
+        />
+      )}
+      onIndexChange={setTabIndex}
+      initialLayout={{ width: layout.width }}
+      commonOptions={{
+        icon: (props) => (
+          <Icon
+            source={props.route.icon}
+            color={props.color}
+            size={props.size}
+          />
+        ),
+      }}
+    />
   );
 };
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    flex: 1,
-    padding: 16,
-  },
-  loadingContainer: {
-    alignItems: "center",
-    flex: 1,
-    justifyContent: "center",
-  },
-  mapContainer: {
-    flex: 1,
-    marginTop: 16,
-  },
-});
 
 export default ExerciseDetailsScreen;

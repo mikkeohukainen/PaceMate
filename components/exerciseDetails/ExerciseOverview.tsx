@@ -57,6 +57,7 @@ function ExerciseOverview({
               locationPoints={routePoints}
               showsUserLocation={false}
               followsUserLocation={false}
+              showMarkers={true}
             />
           </View>
         ) : (

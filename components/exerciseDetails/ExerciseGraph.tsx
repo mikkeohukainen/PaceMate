@@ -7,11 +7,15 @@ import { Exercise } from "@/lib/exercise";
 import { LocationPoint } from "@/lib/route";
 import haversine from "haversine";
 
-type ChartKind = "speed-over-time" | "distance-over-time";
+type ChartKind =
+  | "speed-over-time"
+  | "distance-over-time"
+  | "speed-over-time-smoothed";
 
 const OPTIONS: { label: string; value: ChartKind }[] = [
   { label: "Distance over time", value: "distance-over-time" },
   { label: "Speed over time", value: "speed-over-time" },
+  { label: "Speed over time (smoothed)", value: "speed-over-time-smoothed" },
 ];
 
 type ExerciseGraphProps = {
@@ -35,8 +39,12 @@ const calculateDistance = (point1: LocationPoint, point2: LocationPoint) => {
 
 function ExerciseGraph({ exercise, points }: ExerciseGraphProps) {
   const theme = useTheme();
-  const [chartKind, setChartKind] = useState<ChartKind>("distance-over-time");
+  const [chartKind, setChartKind] = useState<ChartKind>(
+    "speed-over-time-smoothed"
+  );
   const windowHeight = Dimensions.get("window").height;
+
+  const MOVING_AVERAGE_WINDOW_SIZE = 10;
 
   const chartData = useMemo(() => {
     if (!points || points.length === 0 || !exercise.start_time) return [];
@@ -56,18 +64,56 @@ function ExerciseGraph({ exercise, points }: ExerciseGraphProps) {
     }
 
     if (chartKind === "speed-over-time") {
-      const startTime = new Date(exercise.start_time).getTime();
       const data = points.map((point, index) => {
         if (index === 0) return { value: 0 };
 
         const distance = calculateDistance(points[index - 1], point);
-        const timeDiff = new Date(point.timestamp).getTime() - startTime;
+        const timeDiff =
+          new Date(point.timestamp).getTime() -
+          new Date(points[index - 1].timestamp).getTime();
+
         const speed = (distance / (timeDiff / 1000)) * 3600;
 
         return {
           value: speed,
         };
       });
+      return data;
+    }
+
+    if (chartKind === "speed-over-time-smoothed") {
+      const speeds: number[] = [];
+
+      for (let i = 1; i < points.length; i++) {
+        const distance = calculateDistance(points[i - 1], points[i]); // in km
+        const timeDiff =
+          (new Date(points[i].timestamp).getTime() -
+            new Date(points[i - 1].timestamp).getTime()) /
+          3600000; // Convert ms to hours
+
+        // Avoid division by zero
+        const speed = timeDiff > 0 ? distance / timeDiff : 0; // Speed in km/h
+        speeds.push(speed);
+      }
+
+      // Apply moving average to the speeds
+      const smoothedSpeeds = speeds.map((_, idx, arr) => {
+        const start = Math.max(0, idx - MOVING_AVERAGE_WINDOW_SIZE + 1);
+        const end = idx + 1;
+        const windowSpeeds = arr.slice(start, end);
+        const averageSpeed =
+          windowSpeeds.reduce((sum, val) => sum + val, 0) / windowSpeeds.length;
+        return averageSpeed;
+      });
+
+      // Build chart data
+      const data = smoothedSpeeds.map((speed, index) => {
+        if (index === 0) return { value: 0 };
+        return {
+          value: speed,
+        };
+      });
+
       return data;
     }
 

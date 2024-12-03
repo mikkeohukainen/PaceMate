@@ -1,4 +1,9 @@
-import MapView, { Polyline, Region, Marker } from "react-native-maps";
+import MapView, {
+  Polyline,
+  Region,
+  Marker,
+  PROVIDER_GOOGLE,
+} from "react-native-maps";
 import { StyleSheet, View } from "react-native";
 import { LocationPoint } from "@/lib/route";
 import { useTheme } from "react-native-paper";
@@ -33,6 +38,7 @@ const MapRoute = ({
         showsUserLocation={showsUserLocation}
         followsUserLocation={followsUserLocation}
         customMapStyle={theme.dark ? MapStyle : undefined}
+        provider={PROVIDER_GOOGLE}
       >
         <Polyline
           coordinates={locationPoints.map((point) => ({
